@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tachy - 个人主页</title>
+    <meta name="description" content="Tachy 的个人主页 — 一个喜欢写代码的赛博生物。技术栈、项目作品、随机电台音乐盒子、留言板，欢迎来玩。">
+    <meta name="author" content="Tachy">
+    <meta name="theme-color" id="meta-theme-color" content="#fdf2f8">
+    <meta property="og:title" content="Tachy - 个人主页">
+    <meta property="og:description" content="一个喜欢写代码的赛博生物的个人主页。">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23f472b6'/><stop offset='1' stop-color='%23be185d'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text x='50' y='70' font-size='60' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' fill='%23fff'>T</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
@@ -93,6 +100,11 @@
             min-height: 100vh;
             color: var(--text);
             transition: background 0.5s ease, color 0.3s ease;
+        }
+
+        /* 移动端禁用 fixed 背景（iOS Safari 上存在性能与滚动抖动问题） */
+        @media (max-width: 640px) {
+            body { background-attachment: scroll; }
         }
 
         /* 滚动条 */
@@ -209,10 +221,10 @@
             width: 100%; height: 100%; z-index: -1; pointer-events: none;
         }
 
-        /* ========== 返回顶部按钮 ========== */
+        /* ========== 返回顶部按钮（带环形阅读进度） ========== */
         #back-to-top {
             position: fixed; bottom: 30px; right: 30px; z-index: 100;
-            width: 44px; height: 44px; border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 50%;
             background: #ec4899; color: #fff; border: none; cursor: pointer;
             box-shadow: 0 4px 16px rgba(236,72,153,0.4);
             display: flex; align-items: center; justify-content: center;
@@ -221,6 +233,18 @@
         }
         #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
         #back-to-top:hover { background: #db2777; transform: translateY(-4px); }
+        #back-to-top .btp-ring {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            transform: rotate(-90deg); pointer-events: none;
+        }
+        #back-to-top .btp-ring circle { fill: none; stroke-width: 3; }
+        #back-to-top .btp-track { stroke: rgba(255,255,255,0.3); }
+        #back-to-top .btp-progress {
+            stroke: #fff; stroke-linecap: round;
+            stroke-dasharray: 135.09; stroke-dashoffset: 135.09;
+            transition: stroke-dashoffset 0.15s linear;
+        }
+        #back-to-top .btp-arrow { position: relative; z-index: 1; }
 
         /* ========== 留言板 ========== */
         .message-bubble {
@@ -330,10 +354,12 @@
         }
         .tilt-card:hover { z-index:5; }
 
-        /* ========== FAB 快捷菜单 ========== */
+        /* ========== FAB 快捷菜单（锚定在返回顶部按钮正上方，向上展开） ========== */
+        /* 说明：DOM 顺序为「选项…切换按钮」，配合 flex-direction: column，
+           切换按钮固定在容器底部（即返回顶部正上方），选项向上弹出。 */
         #fab-menu {
-            position:fixed;bottom:80px;right:30px;z-index:100;
-            display:flex;flex-direction:column-reverse;gap:10px;align-items:center;
+            position:fixed;bottom:88px;right:30px;z-index:100;
+            display:flex;flex-direction:column;gap:10px;align-items:center;
         }
         .fab-toggle {
             width:48px;height:48px;border-radius:50%;
@@ -347,6 +373,7 @@
         .fab-toggle:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(236,72,153,0.5); }
         .fab-toggle.open { transform:rotate(45deg); }
         .fab-item {
+            position:relative; /* 修正 fab-tip 工具提示的定位基准 */
             width:40px;height:40px;border-radius:50%;
             background:var(--glass-bg);backdrop-filter:blur(16px);
             border:1px solid var(--glass-border);color:var(--text-secondary);
@@ -666,12 +693,40 @@
             .music-artist { font-size:16px; }
         }
 
-        /* ========== 段落文字动画增强 ========== */
-        .reveal-text {
-            opacity:0;transform:translateY(20px);
-            transition:opacity 0.6s ease,transform 0.6s cubic-bezier(0.4,0,0.2,1);
+        /* ========== 光标光晕 ========== */
+
+        /* ========== 滚动揭示（IntersectionObserver 驱动，一次性动画不干扰卡片过渡） ========== */
+        .reveal-on-scroll { opacity:0; transform:translateY(30px); }
+        .reveal-on-scroll.reveal-plain { transform:none; }
+        .reveal-on-scroll.reveal-left { transform:translateX(-40px); }
+        .reveal-on-scroll.reveal-right { transform:translateX(40px); }
+        .reveal-on-scroll.revealed {
+            opacity:1; transform:none;
+            animation: revealFadeUp 0.7s ease-out backwards;
         }
-        .reveal-text.visible { opacity:1;transform:translateY(0); }
+        .reveal-on-scroll.reveal-plain.revealed { animation-name: revealFade; }
+        .reveal-on-scroll.reveal-left.revealed { animation-name: revealLeft; }
+        .reveal-on-scroll.reveal-right.revealed { animation-name: revealRight; }
+        @keyframes revealFadeUp {
+            from { opacity:0; transform:translateY(30px); }
+            to   { opacity:1; transform:none; }
+        }
+        @keyframes revealFade {
+            from { opacity:0; }
+            to   { opacity:1; }
+        }
+        @keyframes revealLeft {
+            from { opacity:0; transform:translateX(-40px); }
+            to   { opacity:1; transform:none; }
+        }
+        @keyframes revealRight {
+            from { opacity:0; transform:translateX(40px); }
+            to   { opacity:1; transform:none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-on-scroll { opacity:1; transform:none; }
+            .reveal-on-scroll.revealed { animation:none; }
+        }
 
         /* ========== 视差层 ========== */
         .parallax-layer {
@@ -683,6 +738,7 @@
             .glass-card { border-radius: 20px !important; }
             .glass-card:hover { transform: none; }
             #back-to-top { bottom: 20px; right: 16px; width: 40px; height: 40px; }
+            #fab-menu { bottom: 70px; right: 16px; }
         }
 
         /* ========== 阅读进度条 ========== */
@@ -761,10 +817,156 @@
         }
         .friend-link-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(236,72,153,0.15); border-color: #f9a8d4; }
         .friend-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 18px; flex-shrink: 0; overflow: hidden; }
-        .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: contain; display: block; }
+        .friend-avatar img {
+            width: 100%; height: 100%; border-radius: 50%;
+            object-fit: contain; display: block;
+            background: #fff; /* 垫白底：透明底的 favicon（如掘金旧版蓝猫 logo）在品牌色圆底上会发虚看不清 */
+        }
+
+        /* ========== 通用交互细节 ========== */
+        ::selection { background:#f9a8d4; color:#fff; }
+        [data-theme="dark"] ::selection { background:#be185d; }
+        :focus-visible { outline:2px solid #ec4899; outline-offset:2px; border-radius:4px; }
+        .skip-link {
+            position:fixed; left:-9999px; top:12px; z-index:10002;
+            background:#ec4899; color:#fff; padding:10px 16px; border-radius:10px;
+            font-size:14px; font-weight:600; text-decoration:none;
+        }
+        .skip-link:focus { left:12px; }
+
+        /* ========== 音量滑块美化 ========== */
+        #music-volume::-webkit-slider-thumb {
+            -webkit-appearance:none; appearance:none;
+            width:16px; height:16px; border-radius:50%;
+            background:var(--accent-500,#ec4899); cursor:pointer;
+            box-shadow:0 2px 6px rgba(0,0,0,0.2);
+        }
+        #music-volume::-moz-range-thumb {
+            width:16px; height:16px; border:none; border-radius:50%;
+            background:var(--accent-500,#ec4899); cursor:pointer;
+        }
+
+        /* ========== Lightbox 前后切换 ========== */
+        #lightbox-prev, #lightbox-next {
+            position:absolute; top:50%; transform:translateY(-50%);
+            width:48px; height:48px; border-radius:50%; border:none; cursor:pointer;
+            background:rgba(255,255,255,0.12); color:#fff; font-size:30px; line-height:1;
+            transition:background 0.2s ease, transform 0.2s ease; z-index:2;
+        }
+        #lightbox-prev:hover, #lightbox-next:hover { background:rgba(236,72,153,0.55); }
+        #lightbox-prev:active, #lightbox-next:active { transform:translateY(-50%) scale(0.92); }
+        #lightbox-prev { left:16px; } #lightbox-next { right:16px; }
+        #lightbox-counter {
+            position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+            color:#fff; font-size:13px; opacity:0.85; letter-spacing:1px;
+        }
+        @media (max-width:640px) {
+            #lightbox-prev, #lightbox-next { width:40px; height:40px; font-size:22px; }
+            #lightbox-prev { left:8px; } #lightbox-next { right:8px; }
+        }
+
+        /* ========== 命令面板 & 快捷键帮助 ========== */
+        .cmd-overlay {
+            position:fixed; inset:0; z-index:10010;
+            display:flex; align-items:flex-start; justify-content:center;
+            padding:12vh 16px 0;
+            background:rgba(15,10,20,0.4);
+            backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+            opacity:0; visibility:hidden; transition:opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .cmd-overlay.active { opacity:1; visibility:visible; }
+        .cmd-panel {
+            width:100%; max-width:560px;
+            background:var(--glass-bg);
+            backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+            border:1px solid var(--glass-border); border-radius:20px;
+            box-shadow:0 24px 64px rgba(0,0,0,0.25);
+            overflow:hidden;
+        }
+        .cmd-overlay.active .cmd-panel { animation:cmdPop 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes cmdPop {
+            from { opacity:0; transform:translateY(-14px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .cmd-search {
+            display:flex; align-items:center; gap:10px;
+            padding:14px 16px; border-bottom:1px solid var(--glass-border);
+        }
+        .cmd-search .cmd-icon { color:var(--accent-500,#ec4899); font-size:15px; flex-shrink:0; }
+        .cmd-search input {
+            flex:1; min-width:0; background:transparent; border:none; outline:none;
+            font-size:15px; color:var(--text);
+        }
+        .cmd-search input::placeholder { color:var(--text-secondary); }
+        .cmd-results { max-height:42vh; overflow-y:auto; padding:8px; }
+        .cmd-item {
+            display:flex; align-items:center; gap:12px; width:100%;
+            padding:10px 12px; border-radius:12px; cursor:pointer;
+            color:var(--text); font-size:14px; text-align:left;
+            background:transparent; border:none; font-family:inherit;
+        }
+        .cmd-item:hover, .cmd-item.selected { background:rgba(236,72,153,0.12); }
+        .cmd-item .cmd-item-icon { width:28px; text-align:center; font-size:16px; flex-shrink:0; }
+        .cmd-item .cmd-item-title { flex:1; font-weight:500; }
+        .cmd-item .cmd-item-hint { font-size:12px; color:var(--text-secondary); }
+        .cmd-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:13px; }
+        .cmd-footer {
+            display:flex; gap:14px; flex-wrap:wrap; padding:10px 16px;
+            border-top:1px solid var(--glass-border);
+            font-size:11px; color:var(--text-secondary);
+        }
+        .cmd-footer kbd {
+            background:var(--input-bg); border:1px solid var(--glass-border);
+            border-radius:5px; padding:1px 6px; font-family:inherit; font-size:10px;
+        }
+        .shortcut-table { width:100%; border-collapse:collapse; font-size:13px; }
+        .shortcut-table td { padding:8px 12px; color:var(--text); border-bottom:1px solid var(--glass-border); }
+        .shortcut-table td:first-child { white-space:nowrap; color:var(--text-secondary); font-family:ui-monospace, Consolas, monospace; font-size:12px; }
+        .shortcut-table tr:last-child td { border-bottom:none; }
+
+        /* ========== 点击涟漪 ========== */
+        .click-ripple {
+            position: fixed; left: 0; top: 0;
+            width: 44px; height: 44px; margin: -22px 0 0 -22px;
+            border-radius: 50%; pointer-events: none; z-index: 99990;
+            border: 2px solid var(--accent-500, #ec4899);
+            transform: translate(var(--rx), var(--ry)) scale(0.25);
+            animation: rippleGrow 0.6s ease-out forwards;
+        }
+        @keyframes rippleGrow {
+            to { transform: translate(var(--rx), var(--ry)) scale(1); opacity: 0; }
+        }
+
+        /* ========== 节日横幅 ========== */
+        #festival-banner {
+            position: fixed; top: 76px; left: 50%; transform: translateX(-50%);
+            z-index: 89; cursor: pointer; user-select: none;
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 999px;
+            background: linear-gradient(135deg, #f472b6, #ec4899 55%, #db2777);
+            color: #fff; font-size: 14px; font-weight: 700;
+            box-shadow: 0 8px 28px rgba(236,72,153,0.45);
+            animation: bounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        #festival-banner .fb-close {
+            margin-left: 6px; font-size: 14px; opacity: 0.85; cursor: pointer;
+            border: none; background: none; color: #fff; padding: 0 2px; line-height: 1;
+        }
+        #festival-banner:hover { transform: translateX(-50%) scale(1.05); }
+        @media (max-width: 640px) { #festival-banner { top: 64px; font-size: 12px; padding: 7px 14px; } }
+
+        /* ========== 留言点赞/置顶状态 ========== */
+        .gb-like.liked, .gb-pin.pinned { color: #ec4899; font-weight: 600; }
+
+        /* ========== 动效总开关 ========== */
+        .fx-off .animate-blob { animation: none !important; }
+        .fx-off #cursor-glow { display: none !important; }
     </style>
 </head>
 <body class="text-gray-800">
+
+    <!-- ==================== 无障碍跳转链接 ==================== -->
+    <a class="skip-link" href="#main">跳到主要内容</a>
 
     <!-- ==================== 阅读进度条 ==================== -->
     <div id="reading-progress"></div>
@@ -787,12 +989,12 @@
     <nav id="dot-nav" aria-label="页面导航">
         <span class="dot-nav-item active" data-target="hero"><span class="dot-tooltip">首页</span></span>
         <span class="dot-nav-item" data-target="about"><span class="dot-tooltip">关于</span></span>
+        <span class="dot-nav-item" data-target="contact"><span class="dot-tooltip">联系</span></span>
         <span class="dot-nav-item" data-target="skills"><span class="dot-tooltip">技能</span></span>
         <span class="dot-nav-item" data-target="timeline"><span class="dot-tooltip">历程</span></span>
         <span class="dot-nav-item" data-target="projects"><span class="dot-tooltip">项目</span></span>
-        <span class="dot-nav-item" data-target="gallery"><span class="dot-tooltip">照片</span></span>
         <span class="dot-nav-item" data-target="guestbook"><span class="dot-tooltip">留言</span></span>
-        <span class="dot-nav-item" data-target="contact"><span class="dot-tooltip">联系</span></span>
+        <span class="dot-nav-item" data-target="gallery"><span class="dot-tooltip">照片</span></span>
     </nav>
 
     <!-- ==================== 实时在线面板 ==================== -->
@@ -821,12 +1023,12 @@
             <!-- 桌面端导航 -->
             <div class="hidden sm:flex items-center gap-6 text-sm font-medium">
                 <a href="#about" class="nav-link">关于</a>
+                <a href="#contact" class="nav-link">联系</a>
                 <a href="#skills" class="nav-link">技能</a>
                 <a href="#timeline" class="nav-link">历程</a>
                 <a href="#projects" class="nav-link">项目</a>
-                <a href="#gallery" class="nav-link">照片</a>
                 <a href="#guestbook" class="nav-link">留言</a>
-                <a href="#contact" class="nav-link">联系</a>
+                <a href="#gallery" class="nav-link">照片</a>
             </div>
 
             <!-- 暗色模式切换 + 移动菜单 -->
@@ -842,17 +1044,17 @@
         <!-- 移动端菜单 -->
         <div id="mobileMenu" class="sm:hidden hidden mt-3 space-y-2 text-center text-sm font-medium pb-2">
             <a href="#about" class="block py-2 rounded-lg hover:bg-white/10 transition">关于</a>
+            <a href="#contact" class="block py-2 rounded-lg hover:bg-white/10 transition">联系</a>
             <a href="#skills" class="block py-2 rounded-lg hover:bg-white/10 transition">技能</a>
             <a href="#timeline" class="block py-2 rounded-lg hover:bg-white/10 transition">历程</a>
             <a href="#projects" class="block py-2 rounded-lg hover:bg-white/10 transition">项目</a>
-            <a href="#gallery" class="block py-2 rounded-lg hover:bg-white/10 transition">照片</a>
             <a href="#guestbook" class="block py-2 rounded-lg hover:bg-white/10 transition">留言</a>
-            <a href="#contact" class="block py-2 rounded-lg hover:bg-white/10 transition">联系</a>
+            <a href="#gallery" class="block py-2 rounded-lg hover:bg-white/10 transition">照片</a>
         </div>
     </nav>
 
     <!-- ==================== 主内容区 ==================== -->
-    <main class="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-16 sm:space-y-24">
+    <main id="main" class="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-16 sm:space-y-24">
 
         <!-- ========== Hero 英雄区 ========== -->
         <section id="hero" class="min-h-[85vh] flex items-center justify-center">
@@ -957,6 +1159,41 @@
             </div>
         </section>
 
+        <!-- ========== 联系方式 ========== -->
+        <section id="contact" class="scroll-mt-20 space-y-8">
+            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
+                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">找到我</h2>
+                <p style="color:var(--text-secondary);" class="text-sm">互联网上的各种分身 · 点击卡片可复制账号</p>
+            </div>
+
+            <!-- 社交链接 -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="social-links-container">
+                <!-- JS 动态渲染 -->
+            </div>
+
+            <!-- 即时联系 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 opacity-0 animate-fade-in-up" style="animation-delay:0.2s;">
+                <div class="glass-card rounded-3xl p-6 flex items-center gap-4 cursor-pointer contact-copy" data-copy="zzydhaoren" role="button" tabindex="0" aria-label="复制微信号 zzydhaoren" title="点击复制微信号">
+                    <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-500 flex-shrink-0">
+                        <i class="fa-brands fa-weixin text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">微信</p>
+                        <p class="font-bold" style="color:var(--text);">zzydhaoren</p>
+                    </div>
+                </div>
+                <div class="glass-card rounded-3xl p-6 flex items-center gap-4 cursor-pointer contact-copy" data-copy="2504419411" role="button" tabindex="0" aria-label="复制 QQ 号 2504419411" title="点击复制 QQ 号">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-500 flex-shrink-0">
+                        <i class="fa-brands fa-qq text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">QQ</p>
+                        <p class="font-bold" style="color:var(--text);">2504419411</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ========== 音乐播放器 ========== -->
         <section id="music-section" class="scroll-mt-20 space-y-5">
             <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
@@ -985,11 +1222,13 @@
                             <div class="music-title" id="music-title">点击播放随机电台</div>
                             <div class="music-artist" id="music-artist">发现来自世界各地的音乐</div>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
                             <button class="music-btn" id="music-prev" title="上一个电台">⏮</button>
                             <button class="music-btn play-main" id="music-play" title="播放/暂停">▶</button>
                             <button class="music-btn" id="music-next" title="下一个电台">⏭</button>
                             <button class="music-btn" id="music-random" title="随机电台">🔀</button>
+                            <button class="music-btn" id="music-viz" title="切换可视化样式（柱状/波形/圆环）">📊</button>
+                            <button class="music-btn" id="music-sleep" title="睡眠定时：关/30/60/90 分钟">⏱</button>
                         </div>
                         <div class="flex items-center gap-3">
                             <span style="font-size:15px;color:var(--text-secondary);">🔊</span>
@@ -1061,9 +1300,13 @@
                                class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-brand-300"
                                style="background:var(--input-bg); border-color:var(--glass-border); color:var(--text);" />
                     </div>
-                    <textarea id="gb-message" rows="3" placeholder="说点什么..."
+                    <textarea id="gb-message" rows="3" placeholder="说点什么..." maxlength="500"
                               class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-brand-300 resize-none"
                               style="background:var(--input-bg); border-color:var(--glass-border); color:var(--text);"></textarea>
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <div id="gb-emojis" class="flex items-center gap-1.5 flex-wrap" aria-label="快捷表情"></div>
+                        <span class="text-xs text-gray-400" id="gb-char-count">0/500</span>
+                    </div>
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-gray-400" id="gb-count">0 条留言</span>
                         <button id="gb-submit"
@@ -1075,41 +1318,6 @@
 
                 <!-- 留言列表 -->
                 <div id="gb-list" class="space-y-4"></div>
-            </div>
-        </section>
-
-        <!-- ========== 联系方式 ========== -->
-        <section id="contact" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">找到我</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">互联网上的各种分身</p>
-            </div>
-
-            <!-- 社交链接 -->
-            <div class="glass-card rounded-3xl p-6 sm:p-8 opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="social-links-container">
-                <!-- JS 动态渲染 -->
-            </div>
-
-            <!-- 即时联系 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 opacity-0 animate-fade-in-up" style="animation-delay:0.2s;">
-                <div class="glass-card rounded-3xl p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-500 flex-shrink-0">
-                        <i class="fa-brands fa-weixin text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">微信</p>
-                        <p class="font-bold" style="color:var(--text);">zzydhaoren</p>
-                    </div>
-                </div>
-                <div class="glass-card rounded-3xl p-6 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-500 flex-shrink-0">
-                        <i class="fa-brands fa-qq text-2xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">QQ</p>
-                        <p class="font-bold" style="color:var(--text);">2504419411</p>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -1160,31 +1368,28 @@
     </main>
 
     <!-- ==================== Toast 通知容器 ==================== -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer" aria-live="polite" role="status"></div>
 
     <!-- ==================== Lightbox ==================== -->
-    <div id="lightbox">
-        <span id="lightbox-close">&times;</span>
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="图片预览">
+        <span id="lightbox-close" role="button" aria-label="关闭">&times;</span>
+        <button id="lightbox-prev" aria-label="上一张">‹</button>
+        <button id="lightbox-next" aria-label="下一张">›</button>
         <img src="" alt="预览图片" id="lightbox-img" />
+        <span id="lightbox-counter">1 / 1</span>
     </div>
 
     <!-- ==================== 页脚 ==================== -->
     <!-- ==================== FAB 快捷菜单 ==================== -->
     <div id="fab-menu">
-        <div class="fab-item" data-action="theme" style="transition-delay:0s;">
-            🌓<span class="fab-tip">切换模式</span>
-        </div>
-        <div class="fab-item" data-action="accent" style="transition-delay:0.05s;">
+        <div class="fab-item" data-action="accent" style="transition-delay:0.1s;">
             🎨<span class="fab-tip">换主题色</span>
         </div>
-        <div class="fab-item" data-action="sound" style="transition-delay:0.1s;">
-            🔊<span class="fab-tip">音效</span>
+        <div class="fab-item" data-action="fx" style="transition-delay:0.05s;">
+            💫<span class="fab-tip">动效开关</span>
         </div>
-        <div class="fab-item" data-action="screenshot" style="transition-delay:0.15s;">
-            📸<span class="fab-tip">截图提示</span>
-        </div>
-        <div class="fab-item" data-action="top" style="transition-delay:0.2s;">
-            ⬆<span class="fab-tip">回到顶部</span>
+        <div class="fab-item" data-action="share" style="transition-delay:0s;">
+            📤<span class="fab-tip">分享本页</span>
         </div>
         <button class="fab-toggle" id="fabToggle" aria-label="快捷菜单">⚡</button>
     </div>
@@ -1201,10 +1406,55 @@
 
     <!-- ==================== 返回顶部按钮 ==================== -->
     <button id="back-to-top" aria-label="返回顶部" title="返回顶部 (Ctrl+↑)">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="btp-ring" viewBox="0 0 48 48" aria-hidden="true">
+            <circle class="btp-track" cx="24" cy="24" r="21.5"/>
+            <circle class="btp-progress" id="btp-progress" cx="24" cy="24" r="21.5"/>
+        </svg>
+        <svg class="btp-arrow w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/>
         </svg>
     </button>
+
+    <!-- ==================== 命令面板 ==================== -->
+    <div id="command-palette" class="cmd-overlay" role="dialog" aria-modal="true" aria-label="命令面板">
+        <div class="cmd-panel">
+            <div class="cmd-search">
+                <span class="cmd-icon">⌘</span>
+                <input id="cmd-input" type="text" placeholder="输入命令或搜索…（Ctrl+K 或 / 打开）" autocomplete="off" aria-label="命令搜索" />
+            </div>
+            <div id="cmd-results" class="cmd-results"></div>
+            <div class="cmd-footer">
+                <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+                <span><kbd>Enter</kbd> 执行</span>
+                <span><kbd>Esc</kbd> 关闭</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 快捷键帮助 ==================== -->
+    <div id="shortcut-help" class="cmd-overlay" role="dialog" aria-modal="true" aria-label="快捷键帮助">
+        <div class="cmd-panel">
+            <div class="cmd-search">
+                <span class="cmd-icon">⌨️</span>
+                <span style="flex:1;font-weight:700;color:var(--text);">快捷键一览</span>
+                <button id="shortcut-close" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px;line-height:1;" aria-label="关闭">✕</button>
+            </div>
+            <table class="shortcut-table">
+                <tbody>
+                    <tr><td>Ctrl+D / Ctrl+M</td><td>切换暗色 / 亮色模式</td></tr>
+                    <tr><td>Ctrl+Shift+C</td><td>切换主题色</td></tr>
+                    <tr><td>Ctrl+Shift+S</td><td>开关音效</td></tr>
+                    <tr><td>Ctrl+K 或 /</td><td>打开命令面板</td></tr>
+                    <tr><td>?</td><td>打开本帮助面板</td></tr>
+                    <tr><td>Ctrl+↑</td><td>回到顶部</td></tr>
+                    <tr><td>← →</td><td>照片墙预览中切换图片</td></tr>
+                    <tr><td>↑ ↑ ↓ ↓ ← → ← → B A</td><td>神秘彩蛋，你懂的 🚀</td></tr>
+                    <tr><td>Esc</td><td>关闭弹层 / 移动菜单</td></tr>
+                </tbody>
+            </table>
+            <div class="cmd-footer"><span>按 Esc 或点击空白处关闭</span></div>
+        </div>
+    </div>
 
     <!-- ==================== JavaScript 主逻辑 ==================== -->
     <script>
@@ -1225,16 +1475,28 @@
         const themeToggle = document.getElementById('themeToggle');
         const html = document.documentElement;
 
+        // 由后续模块（音频可视化等）注册的样式刷新回调，避免变量声明顺序问题
+        let onVisualRefresh = null;
+
         function applyTheme(theme) {
             html.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
+            const metaTheme = document.getElementById('meta-theme-color');
+            if (metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#1a1025' : '#fdf2f8');
+            if (onVisualRefresh) onVisualRefresh();
         }
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        // 首次访问跟随系统偏好；用户手动切换后以 localStorage 为准
+        const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme') || (systemDark ? 'dark' : 'light');
         applyTheme(savedTheme);
 
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             applyTheme(next);
+        });
+        // 无障碍：支持键盘 Enter/Space 切换
+        themeToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); themeToggle.click(); }
         });
 
         // ==========================================
@@ -1242,21 +1504,37 @@
         // ==========================================
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        const PARTICLE_COUNT = 60;
+        const particles = [];
+        // 移动端减半粒子数，降低 GPU/CPU 负担
+        const PARTICLE_COUNT = window.innerWidth < 768 ? 28 : 60;
+        let viewW = window.innerWidth;
+        let viewH = window.innerHeight;
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            // HiDPI 适配：按设备像素比渲染，粒子坐标仍使用 CSS 像素
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            viewW = window.innerWidth;
+            viewH = window.innerHeight;
+            canvas.width = Math.round(viewW * dpr);
+            canvas.height = Math.round(viewH * dpr);
+            canvas.style.width = viewW + 'px';
+            canvas.style.height = viewH + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        // 防抖：一帧内最多执行一次
+        let resizePending = false;
+        window.addEventListener('resize', () => {
+            if (resizePending) return;
+            resizePending = true;
+            requestAnimationFrame(() => { resizePending = false; resizeCanvas(); });
+        }, { passive: true });
 
         class Particle {
             constructor() { this.reset(); }
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * viewW;
+                this.y = Math.random() * viewH;
                 this.size = Math.random() * 2.5 + 0.5;
                 this.speedX = (Math.random() - 0.5) * 0.4;
                 this.speedY = (Math.random() - 0.5) * 0.4;
@@ -1265,19 +1543,15 @@
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-                if (this.x < -10) this.x = canvas.width + 10;
-                if (this.x > canvas.width + 10) this.x = -10;
-                if (this.y < -10) this.y = canvas.height + 10;
-                if (this.y > canvas.height + 10) this.y = -10;
+                if (this.x < -10) this.x = viewW + 10;
+                if (this.x > viewW + 10) this.x = -10;
+                if (this.y < -10) this.y = viewH + 10;
+                if (this.y > viewH + 10) this.y = -10;
             }
             draw() {
-                const isDark = html.getAttribute('data-theme') === 'dark';
-                const r = isDark ? 236 : 236;
-                const g = isDark ? 72 : 72;
-                const b = isDark ? 153 : 153;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${r},${g},${b},${this.opacity})`;
+                ctx.fillStyle = `rgba(236,72,153,${this.opacity})`;
                 ctx.fill();
             }
         }
@@ -1287,22 +1561,25 @@
         }
 
         function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
+            ctx.clearRect(0, 0, viewW, viewH);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+            }
 
-            // 画连线
+            // 画连线（主题透明度每帧只读取一次）
+            const linkAlpha = html.getAttribute('data-theme') === 'dark' ? 0.07 : 0.06;
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < 120) {
-                        const isDark = html.getAttribute('data-theme') === 'dark';
-                        const a = isDark ? 0.07 : 0.06;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(236,72,153,${a * (1 - dist / 120)})`;
+                        ctx.strokeStyle = `rgba(236,72,153,${linkAlpha * (1 - dist / 120)})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
@@ -1321,9 +1598,11 @@
             const dateEl = document.getElementById('clock-date');
             const greetingEl = document.getElementById('clock-greeting');
             if (timeEl) timeEl.textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
-            if (dateEl) dateEl.textContent = now.toLocaleDateString('zh-CN', {
+            // 日期一天才变一次，避免每秒重复写 DOM
+            const dateText = now.toLocaleDateString('zh-CN', {
                 year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
             });
+            if (dateEl && dateText !== dateEl.textContent) dateEl.textContent = dateText;
             if (greetingEl) {
                 const h = now.getHours();
                 let g = '深夜了，早点休息 🌙';
@@ -1335,7 +1614,7 @@
                 greetingEl.textContent = g;
             }
         }
-        setInterval(updateClock, 1000);
+        let clockTimer = setInterval(updateClock, 1000);
         updateClock();
 
         // ==========================================
@@ -1525,11 +1804,24 @@
         // 11. 留言板 (localStorage)
         // ==========================================
         const STORAGE_KEY = 'tachy_guestbook_messages';
+        const PIN_KEY = 'tachy_gb_pinned';
+        const LIKED_KEY = 'tachy_gb_liked';
         let messages = [];
+        let pinnedIds = [];
+        let likedIds = [];
 
         function loadMessages() {
             try { messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
             catch (e) { messages = []; }
+            // 旧数据迁移：补充 id 与 likes 字段
+            let changed = false;
+            messages.forEach(m => {
+                if (!m.id) { m.id = 'm' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); changed = true; }
+                if (typeof m.likes !== 'number') { m.likes = 0; changed = true; }
+            });
+            if (changed) saveMessages();
+            try { pinnedIds = JSON.parse(localStorage.getItem(PIN_KEY) || '[]'); } catch (e) { pinnedIds = []; }
+            try { likedIds = JSON.parse(localStorage.getItem(LIKED_KEY) || '[]'); } catch (e) { likedIds = []; }
         }
 
         function saveMessages() {
@@ -1543,22 +1835,37 @@
             if (messages.length === 0) {
                 list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">还没有留言，来做第一个留言的人吧！🎉</div>`;
             } else {
-                list.innerHTML = [...messages].reverse().map((m, i) => `
-                    <div class="message-bubble glass-card rounded-2xl p-4 flex gap-3">
+                // 置顶优先，其余按时间倒序
+                const sorted = [...messages].sort((a, b) => {
+                    const ap = pinnedIds.includes(a.id) ? 1 : 0;
+                    const bp = pinnedIds.includes(b.id) ? 1 : 0;
+                    if (ap !== bp) return bp - ap;
+                    return b.time - a.time;
+                });
+                list.innerHTML = sorted.map((m) => {
+                    const liked = likedIds.includes(m.id);
+                    const pinned = pinnedIds.includes(m.id);
+                    return `
+                    <div class="message-bubble glass-card rounded-2xl p-4 flex gap-3${pinned ? '' : ''}">
                         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-300 to-brand-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                             ${(m.nickname || '?')[0]}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
+                                ${pinned ? '<span class="text-xs">📌</span>' : ''}
                                 <span class="font-bold text-sm" style="color:var(--text);">${escapeHTML(m.nickname || '匿名')}</span>
                                 ${m.contact ? `<span class="text-xs text-gray-400">· ${escapeHTML(m.contact)}</span>` : ''}
                                 <span class="text-xs text-gray-300">${timeAgo(m.time)}</span>
                             </div>
                             <p class="text-sm mt-1" style="color:var(--text-secondary);">${escapeHTML(m.message)}</p>
-                            <button class="text-xs text-gray-400 hover:text-red-400 transition mt-1 gb-delete" data-index="${messages.length - 1 - i}">删除</button>
+                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                <button class="text-xs px-2 py-1 rounded-md transition gb-like ${liked ? 'liked' : 'text-gray-400 hover:text-brand-500'}" data-id="${m.id}" title="点赞">👍 ${m.likes || 0}</button>
+                                <button class="text-xs px-2 py-1 rounded-md transition gb-pin ${pinned ? 'pinned' : 'text-gray-400 hover:text-brand-500'}" data-id="${m.id}" title="置顶/取消置顶">${pinned ? '📌 已置顶' : '📌 置顶'}</button>
+                                <button class="text-xs px-2 py-1 rounded-md transition text-gray-400 hover:text-red-400 gb-delete" data-index="${messages.indexOf(m)}" title="删除">🗑 删除</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             }
             if (count) count.textContent = `${messages.length} 条留言`;
         }
@@ -1590,10 +1897,12 @@
             if (message.length > 500) { showToast('留言太长了，最多 500 字～', 'warning'); return; }
 
             messages.push({
+                id: 'm' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
                 nickname: nickname.substring(0, 20),
                 contact: contact.substring(0, 20),
                 message: message.substring(0, 500),
                 time: Date.now(),
+                likes: 0,
             });
             saveMessages();
             renderMessages();
@@ -1603,14 +1912,53 @@
             document.getElementById('gb-nickname').value = '';
             document.getElementById('gb-contact').value = '';
             document.getElementById('gb-message').value = '';
+            updateCharCount();
         });
 
-        // 删除留言（事件委托）
+        // 点赞 / 置顶 / 删除留言（事件委托）
         document.getElementById('gb-list').addEventListener('click', (e) => {
+            const likeBtn = e.target.closest('.gb-like');
+            if (likeBtn) {
+                const id = likeBtn.dataset.id;
+                const msg = messages.find(m => m.id === id);
+                if (!msg) return;
+                if (likedIds.includes(id)) {
+                    likedIds = likedIds.filter(x => x !== id);
+                    msg.likes = Math.max(0, (msg.likes || 0) - 1);
+                } else {
+                    likedIds.push(id);
+                    msg.likes = (msg.likes || 0) + 1;
+                    playClick();
+                }
+                localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
+                saveMessages();
+                renderMessages();
+                return;
+            }
+            const pinBtn = e.target.closest('.gb-pin');
+            if (pinBtn) {
+                const id = pinBtn.dataset.id;
+                if (pinnedIds.includes(id)) {
+                    pinnedIds = pinnedIds.filter(x => x !== id);
+                } else {
+                    pinnedIds.push(id);
+                    showToast('📌 已置顶该留言', 'success');
+                }
+                localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
+                renderMessages();
+                return;
+            }
             if (e.target.classList.contains('gb-delete')) {
                 const idx = parseInt(e.target.dataset.index);
                 if (!isNaN(idx) && idx >= 0 && idx < messages.length) {
+                    const removed = messages[idx];
                     messages.splice(idx, 1);
+                    if (removed && removed.id) {
+                        pinnedIds = pinnedIds.filter(x => x !== removed.id);
+                        likedIds = likedIds.filter(x => x !== removed.id);
+                        localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
+                        localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
+                    }
                     saveMessages();
                     renderMessages();
                 }
@@ -1625,6 +1973,46 @@
             }
         });
 
+        // 字数统计 + 快捷表情
+        const gbMessageInput = document.getElementById('gb-message');
+        const gbCharCount = document.getElementById('gb-char-count');
+        const gbEmojis = document.getElementById('gb-emojis');
+        const GB_EMOJI_LIST = ['😀','😂','🥰','😎','🤔','😭','👍','👏','🎉','❤️','🔥','🐱','🌙','⭐'];
+
+        function insertAtCursor(textarea, text) {
+            const start = textarea.selectionStart ?? textarea.value.length;
+            const end = textarea.selectionEnd ?? textarea.value.length;
+            textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+            const pos = start + text.length;
+            textarea.focus();
+            textarea.setSelectionRange(pos, pos);
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        function updateCharCount() {
+            if (!gbCharCount || !gbMessageInput) return;
+            const len = gbMessageInput.value.length;
+            gbCharCount.textContent = `${len}/500`;
+            gbCharCount.classList.toggle('text-red-400', len > 500);
+            gbCharCount.classList.toggle('text-gray-400', len <= 500);
+        }
+
+        if (gbEmojis) {
+            gbEmojis.innerHTML = GB_EMOJI_LIST.map(em =>
+                `<button type="button" class="text-base hover:scale-125 transition-transform" aria-label="插入表情 ${em}">${em}</button>`
+            ).join('');
+            gbEmojis.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn || !gbMessageInput) return;
+                insertAtCursor(gbMessageInput, btn.textContent);
+            });
+        }
+
+        if (gbMessageInput) {
+            gbMessageInput.addEventListener('input', updateCharCount);
+            updateCharCount();
+        }
+
         // ==========================================
         // 12. 移动端菜单
         // ==========================================
@@ -1638,52 +2026,82 @@
         }
 
         // ==========================================
-        // 13. 滚动动画（技能条 + 卡片显示）
+        // 13. 滚动揭示动画（IntersectionObserver + 技能条）
         // ==========================================
-        function animateSkillBars() {
-            document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-                const rect = bar.getBoundingClientRect();
-                if (rect.top < window.innerHeight - 50) {
-                    bar.style.width = bar.getAttribute('data-width') + '%';
-                }
+        // 将一次性入场动画类转换为真正由滚动触发的揭示动画，
+        // 使首屏之外的内容在滚到可视区时才出现，而非页面加载时全部播完。
+        const REVEAL_SELECTOR = '.opacity-0.animate-fade-in-up, .opacity-0.animate-fade-in, .opacity-0.animate-slide-in-left, .opacity-0.animate-slide-in-right';
+
+        function initReveal() {
+            const revealEls = Array.from(document.querySelectorAll(REVEAL_SELECTOR));
+            const skillBars = Array.from(document.querySelectorAll('.skill-bar-fill'));
+
+            revealEls.forEach(el => {
+                let variant = 'up';
+                if (el.classList.contains('animate-slide-in-left')) variant = 'left';
+                else if (el.classList.contains('animate-slide-in-right')) variant = 'right';
+                else if (el.classList.contains('animate-fade-in')) variant = 'plain';
+                el.classList.remove('opacity-0', 'animate-fade-in-up', 'animate-fade-in', 'animate-slide-in-left', 'animate-slide-in-right');
+                el.classList.add('reveal-on-scroll', 'reveal-' + variant);
+                // 原内联 animation-delay 转为揭示动画的延迟
+                const delay = parseFloat(el.style.animationDelay);
+                if (isNaN(delay) || delay <= 0) el.style.animationDelay = '';
             });
+
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    if (el.classList.contains('skill-bar-fill')) {
+                        el.style.width = el.dataset.width + '%';
+                    } else {
+                        el.classList.add('revealed');
+                    }
+                    io.unobserve(el);
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+            revealEls.forEach(el => io.observe(el));
+            skillBars.forEach(el => io.observe(el));
         }
-
-        function revealOnScroll() {
-            document.querySelectorAll('.opacity-0.animate-fade-in-up, .opacity-0.animate-fade-in, .opacity-0.animate-slide-in-left, .opacity-0.animate-slide-in-right').forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight - 80) {
-                    el.classList.remove('opacity-0');
-                }
-            });
-        }
-
-        window.addEventListener('scroll', () => {
-            animateSkillBars();
-            revealOnScroll();
-        }, { passive: true });
-
-        window.addEventListener('load', () => {
-            animateSkillBars();
-            revealOnScroll();
-        });
-        setTimeout(() => { animateSkillBars(); revealOnScroll(); }, 500);
 
         // ==========================================
         // 14. 返回顶部按钮
         // ==========================================
         const backToTop = document.getElementById('back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 600) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        }, { passive: true });
-
+        const btpProgress = document.getElementById('btp-progress');
         backToTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+
+        // ---- 统一滚动处理（rAF 节流，合并原本分散的多个 scroll 监听） ----
+        let scrollPending = false;
+        function handleScrollFrame() {
+            scrollPending = false;
+            const y = window.scrollY;
+            if (backToTop) backToTop.classList.toggle('visible', y > 600);
+
+            // 阅读进度条 + 返回顶部环形进度
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? Math.min((y / docHeight) * 100, 100) : 0;
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (btpProgress && backToTop) {
+                btpProgress.style.strokeDashoffset = (135.09 * (1 - progress / 100)).toFixed(2);
+                backToTop.title = `已阅读 ${Math.round(progress)}% — 返回顶部 (Ctrl+↑)`;
+            }
+
+            // 浮动导航点高亮
+            updateDotNav(y);
+
+            // 粒子画布视差微动
+            if (canvas) canvas.style.transform = `translateY(${y * 0.015}px)`;
+        }
+        window.addEventListener('scroll', () => {
+            if (!scrollPending) {
+                scrollPending = true;
+                requestAnimationFrame(handleScrollFrame);
+            }
+        }, { passive: true });
 
         // ==========================================
         // 15. 平滑滚动（兜底）
@@ -1697,18 +2115,32 @@
         });
 
         // ==========================================
-        // 16. 键盘快捷键
+        // 16. 键盘快捷键（统一处理）
         // ==========================================
         document.addEventListener('keydown', (e) => {
             // Ctrl+↑ 返回顶部
             if (e.ctrlKey && e.key === 'ArrowUp') {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
             }
-            // Ctrl+D 切换暗色模式
-            if (e.ctrlKey && e.key === 'd') {
+            // Ctrl+D / Ctrl+M 切换暗色模式
+            if (e.ctrlKey && (e.key === 'd' || e.key === 'm')) {
                 e.preventDefault();
                 themeToggle.click();
+                return;
+            }
+            // Ctrl+Shift+C 切换主题色
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                cycleAccent();
+                return;
+            }
+            // Ctrl+Shift+S 开关音效
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                if (soundToggleBtn) soundToggleBtn.click();
+                return;
             }
             // Escape 关闭移动端菜单
             if (e.key === 'Escape' && mobileMenu && !mobileMenu.classList.contains('hidden')) {
@@ -1724,23 +2156,25 @@
         console.log('%c🔍 发现 Bug 请投喂：zzydhaoren', 'font-size:12px;color:#9ca3af;');
 
         // ==========================================
-        // 18. 页脚信息
+        // 18. 页脚信息（资源全部加载完成后统计耗时）
         // ==========================================
         const footerInfo = document.getElementById('footer-info');
+        const bootTime = performance.now();
         if (footerInfo) {
-            footerInfo.textContent = `页面加载耗时 ${Math.round(performance.now())}ms | 分辨率 ${window.screen.width}×${window.screen.height}`;
+            const showLoadTime = () => {
+                const main = document.getElementById('main');
+                const textLen = main ? main.innerText.replace(/\s+/g, '').length : 0;
+                const readMin = Math.max(1, Math.round(textLen / 400));
+                footerInfo.textContent = `页面加载耗时 ${Math.round(performance.now() - bootTime)}ms | 分辨率 ${window.screen.width}×${window.screen.height} | 预计阅读 ${readMin} 分钟`;
+            };
+            if (document.readyState === 'complete') showLoadTime();
+            else window.addEventListener('load', showLoadTime, { once: true });
         }
 
         // ==========================================
-        // 19. 阅读进度条
+        // 19. 阅读进度条（滚动处理已合并至统一 handler）
         // ==========================================
         const progressBar = document.getElementById('reading-progress');
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-            if (progressBar) progressBar.style.width = Math.min(progress, 100) + '%';
-        }, { passive: true });
 
         // ==========================================
         // 20. Toast 通知系统
@@ -1756,20 +2190,54 @@
         }
 
         // ==========================================
+        // 20.5 复制到剪贴板（联系方式卡片）
+        // ==========================================
+        function legacyCopy(text, done) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+            ta.remove();
+            ok ? done() : showToast('⚠️ 复制失败，请手动复制', 'warning');
+        }
+
+        function copyText(text) {
+            const done = () => showToast('📋 已复制：' + text, 'success');
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(done).catch(() => legacyCopy(text, done));
+            } else {
+                legacyCopy(text, done);
+            }
+        }
+
+        document.querySelectorAll('.contact-copy').forEach(el => {
+            const doCopy = () => copyText(el.dataset.copy);
+            el.addEventListener('click', doCopy);
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doCopy(); }
+            });
+        });
+
+        // ==========================================
         // 21. 照片画廊 + Lightbox
         // ==========================================
-        // 多源动漫随机图 API 混搭，避免单点故障
+        // 仅用 t.alcy.cc 双 API：横图用 moe、竖图用 moemp，按交错布局的格子形状分配。
+        // 每个 URL 拼随机参数防缓存，保证同一接口的多张图各不相同。
         const galleryImages = [
-            { src: 'https://www.dmoe.cc/random.php?r=' + Math.random(), alt: '随机动漫 1' },
-            { src: 'https://t.alcy.cc/moez?' + Math.random(), alt: '随机动漫 2' },
-            { src: 'https://api.horosama.com/random.php?r=' + Math.random(), alt: '随机动漫 3' },
-            { src: 'https://www.dmoe.cc/random.php?r=' + Math.random(), alt: '随机动漫 4' },
-            { src: 'https://t.alcy.cc/moez?' + Math.random(), alt: '随机动漫 5' },
-            { src: 'https://api.horosama.com/random.php?r=' + Math.random(), alt: '随机动漫 6' },
-            { src: 'https://www.dmoe.cc/random.php?r=' + Math.random(), alt: '随机动漫 7' },
-            { src: 'https://t.alcy.cc/moez?' + Math.random(), alt: '随机动漫 8' },
-            { src: 'https://api.horosama.com/random.php?r=' + Math.random(), alt: '随机动漫 9' },
-            { src: 'https://www.dmoe.cc/random.php?r=' + Math.random(), alt: '随机动漫 10' },
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 1' }, // 0: 大图 (2×2)
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 2' }, // 1: 普通
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 3' }, // 2: 普通
+            { src: 'https://t.alcy.cc/moemp?' + Math.random(), alt: '动漫竖图 1' }, // 3: 普通
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 4' }, // 4: 宽图 (2×1)
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 5' }, // 5: 普通（填缝）
+            { src: 'https://t.alcy.cc/moemp?' + Math.random(), alt: '动漫竖图 2' }, // 6: 竖高 (1×2)
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 6' }, // 7: 普通（填缝）
+            { src: 'https://t.alcy.cc/moe?'   + Math.random(), alt: '动漫横图 7' }, // 8: 宽图 (2×1)
+            { src: 'https://t.alcy.cc/moemp?' + Math.random(), alt: '动漫竖图 3' }, // 9: 普通（填缝）
         ];
 
         // 交错布局模式（10图，4列grid，dense自动填补，无缺口）
@@ -1797,29 +2265,45 @@
                 </div>`;
             }).join('');
 
-            // Lightbox 逻辑
+            // Lightbox 逻辑（支持上一张/下一张、计数器与键盘方向键）
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
             const lightboxClose = document.getElementById('lightbox-close');
+            const lightboxPrev = document.getElementById('lightbox-prev');
+            const lightboxNext = document.getElementById('lightbox-next');
+            const lightboxCounter = document.getElementById('lightbox-counter');
+            const galleryCards = Array.from(galleryGrid.querySelectorAll('.gallery-img'));
+            let lightboxIndex = 0;
 
-            galleryGrid.addEventListener('click', (e) => {
-                const card = e.target.closest('.gallery-img');
-                if (!card) return;
-                lightboxImg.src = card.dataset.src;
-                lightboxImg.alt = card.dataset.alt;
+            function openLightbox(idx) {
+                lightboxIndex = (idx + galleryImages.length) % galleryImages.length;
+                const img = galleryImages[lightboxIndex];
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt;
+                if (lightboxCounter) lightboxCounter.textContent = `${lightboxIndex + 1} / ${galleryImages.length}`;
                 lightbox.classList.add('active');
                 document.body.style.overflow = 'hidden';
-            });
+            }
 
             function closeLightbox() {
                 lightbox.classList.remove('active');
                 document.body.style.overflow = '';
             }
+            galleryGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.gallery-img');
+                if (!card) return;
+                openLightbox(galleryCards.indexOf(card));
+            });
             lightbox.addEventListener('click', (e) => {
                 if (e.target === lightbox || e.target === lightboxClose) closeLightbox();
+                else if (e.target === lightboxPrev) openLightbox(lightboxIndex - 1);
+                else if (e.target === lightboxNext) openLightbox(lightboxIndex + 1);
             });
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                else if (e.key === 'ArrowLeft') openLightbox(lightboxIndex - 1);
+                else if (e.key === 'ArrowRight') openLightbox(lightboxIndex + 1);
             });
         }
 
@@ -1852,9 +2336,9 @@
             };
 
             const heatData = generateHeatData();
-            let html = '<div style="display:flex;gap:2px;flex-wrap:wrap;min-width:700px;">';
+            let html = '<div style="position:relative;display:flex;gap:2px;flex-wrap:wrap;min-width:700px;">';
             // 月份标签
-            html += '<div style="display:flex;gap:2px;width:100%;margin-bottom:4px;">';
+            html += '<div style="display:flex;gap:2px;width:100%;height:14px;margin-bottom:2px;">';
             let lastMonth = -1;
             heatData.forEach((d, i) => {
                 const month = d.date.getMonth();
@@ -1908,6 +2392,9 @@
         // ==========================================
         // 24. 友情链接
         // ==========================================
+        // 已还原为 Google favicon 服务原始图标源（撤销上一步的掘金内嵌图标）。
+        // 保留 onerror 兜底的小修复：原写法先 remove() 再访问 parentElement（已为 null）
+        // 会报错导致显示空白；改用 replaceWith 一行完成首字母回退。
         const friends = [
             { name: 'GitHub', desc: '全球最大同性交友平台', url: 'https://github.com', domain: 'github.com', color: '#24292e' },
             { name: '掘金', desc: '开发者社区', url: 'https://juejin.cn', domain: 'juejin.cn', color: '#1e80ff' },
@@ -1924,7 +2411,7 @@
                     <div class="friend-avatar" style="background:${f.color};">
                         <img src="https://www.google.com/s2/favicons?domain=${f.domain}&sz=64"
                              alt="" loading="lazy"
-                             onerror="this.remove();this.parentElement.textContent='${f.name[0]}';" />
+                             onerror="this.replaceWith('${f.name[0]}')" />
                     </div>
                     <div>
                         <div class="font-bold text-sm">${f.name}</div>
@@ -1944,19 +2431,26 @@
         // --- 特效引擎 ---
 
         // 屏幕震动
+        // 修复：transform 作用在 body 上会使所有 fixed 元素以整页高度为定位基准（彩蛋触发时
+        // 悬浮按钮会瞬移到页面底部），改为只震动 nav/main/footer 内容层。
         function screenShake(intensity = 8, duration = 600) {
+            const targets = [
+                document.querySelector('nav.nav-glass'),
+                document.getElementById('main'),
+                document.querySelector('footer')
+            ].filter(Boolean);
+            const origTransforms = targets.map(t => t.style.transform || '');
             const startTime = performance.now();
-            const origTransform = document.body.style.transform || '';
             function tick(now) {
                 const elapsed = now - startTime;
                 if (elapsed > duration) {
-                    document.body.style.transform = origTransform;
+                    targets.forEach((t, i) => { t.style.transform = origTransforms[i]; });
                     return;
                 }
                 const decay = 1 - elapsed / duration;
                 const x = (Math.random() - 0.5) * intensity * decay * 2;
                 const y = (Math.random() - 0.5) * intensity * decay * 2;
-                document.body.style.transform = `translate(${x}px,${y}px)`;
+                targets.forEach(t => { t.style.transform = `translate(${x}px,${y}px)`; });
                 requestAnimationFrame(tick);
             }
             requestAnimationFrame(tick);
@@ -2091,11 +2585,8 @@
                     const progress = p.age / p.life;
                     const ease = 1 - Math.pow(1 - progress, 3);
                     const dist = ease * 300;
-                    const currentX = parseFloat(p.el.style.left) + p.vx * dist * 0.05;
-                    const currentY = parseFloat(p.el.style.top) + p.vy * dist * 0.05;
-                    p.el.style.transform = `translate(${p.vx * dist * 0.05}px,${p.vy * dist * 0.05}px)`;
+                    p.el.style.transform = `translate(${p.vx * dist * 0.05}px,${p.vy * dist * 0.05}px) scale(${1 - progress * 0.8})`;
                     p.el.style.opacity = (1 - progress).toFixed(2);
-                    p.el.style.transform += ` scale(${1 - progress * 0.8})`;
                 });
                 if (alive) requestAnimationFrame(tick);
                 else container.remove();
@@ -2160,14 +2651,16 @@
             document.body.appendChild(container);
 
             const emojis = ['💖','✨','🌟','💫','🎀','💝','🔥','💻','🚀','🎮','🦄','🌈','⚡','💎','🎪','🎯','🧬','🔮','💥','🎆'];
+            let maxEnd = 0;
             for (let i = 0; i < count; i++) {
+                const left = Math.random() * 100;
+                const size = 18 + Math.random() * 36;
+                const duration = 1.5 + Math.random() * 2.5;
+                const delay = Math.random() * 0.5;
+                const startAt = i * 30;
                 setTimeout(() => {
                     const el = document.createElement('div');
                     el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    const left = Math.random() * 100;
-                    const size = 18 + Math.random() * 36;
-                    const duration = 1.5 + Math.random() * 2.5;
-                    const delay = Math.random() * 0.5;
                     el.style.cssText = `
                         position:absolute;pointer-events:none;
                         font-size:${size}px;
@@ -2176,8 +2669,11 @@
                     `;
                     container.appendChild(el);
                     setTimeout(() => el.remove(), (duration + delay) * 1000 + 100);
-                }, i * 30);
+                }, startAt);
+                maxEnd = Math.max(maxEnd, startAt + (duration + delay) * 1000 + 200);
             }
+            // 动画结束后移除容器，避免残留空节点
+            setTimeout(() => container.remove(), maxEnd);
         }
 
         // 全屏闪烁
@@ -2193,6 +2689,45 @@
         }
 
         // --- 点击处理 ---
+        // 彩蛋特效序列（按钮连点、命令面板、科乐美秘技共用）
+        function fireEasterEgg(cx, cy) {
+            // 重置彩蛋按钮状态
+            if (eggTrigger) {
+                eggClicks = 0;
+                eggTrigger.textContent = '✨';
+                eggTrigger.style.opacity = '0.15';
+                eggTrigger.style.transform = 'scale(1)';
+            }
+
+            // 🎆 特效序列
+            screenFlash('rgba(255,255,255,0.8)', 250);
+            setTimeout(() => screenShake(12, 700), 50);
+            if (cx != null && cy != null) setTimeout(() => spawnExplosion(cx, cy, 100), 80);
+            setTimeout(() => spawnConfetti(350), 150);
+            setTimeout(() => spawnEmojiRain(60), 200);
+            setTimeout(() => showBigText(), 300);
+
+            // 彩虹背景闪烁
+            const colors = ['#fdf2f8','#fce7f3','#fbcfe8','#f9a8d4','#f472b6','#ec4899','#ddd6fe','#cffafe','#fef3c7'];
+            document.body.style.transition = 'background 0.15s ease';
+            let ci = 0;
+            const rainbow = setInterval(() => {
+                document.body.style.background = colors[ci % colors.length];
+                ci++;
+            }, 120);
+            setTimeout(() => {
+                clearInterval(rainbow);
+                document.body.style.background = '';
+                document.body.style.transition = '';
+            }, 2000);
+
+            showToast('🎉 彩蛋触发！赛博飞升模式开启！🚀✨', 'success');
+
+            // 第二轮延迟特效
+            setTimeout(() => spawnEmojiRain(30), 1200);
+            setTimeout(() => screenFlash('rgba(255,255,255,0.3)', 200), 1800);
+        }
+
         if (eggTrigger) {
             eggTrigger.addEventListener('click', (e) => {
                 eggClicks++;
@@ -2209,38 +2744,7 @@
                 }
 
                 if (eggClicks >= EGG_REQUIRED) {
-                    eggClicks = 0;
-                    eggTrigger.textContent = '✨';
-                    eggTrigger.style.opacity = '0.15';
-                    eggTrigger.style.transform = 'scale(1)';
-
-                    // 🎆 特效序列
-                    screenFlash('rgba(255,255,255,0.8)', 250);
-                    setTimeout(() => screenShake(12, 700), 50);
-                    setTimeout(() => spawnExplosion(e.clientX, e.clientY, 100), 80);
-                    setTimeout(() => spawnConfetti(350), 150);
-                    setTimeout(() => spawnEmojiRain(60), 200);
-                    setTimeout(() => showBigText(), 300);
-
-                    // 彩虹背景闪烁
-                    const colors = ['#fdf2f8','#fce7f3','#fbcfe8','#f9a8d4','#f472b6','#ec4899','#ddd6fe','#cffafe','#fef3c7'];
-                    document.body.style.transition = 'background 0.15s ease';
-                    let ci = 0;
-                    const rainbow = setInterval(() => {
-                        document.body.style.background = colors[ci % colors.length];
-                        ci++;
-                    }, 120);
-                    setTimeout(() => {
-                        clearInterval(rainbow);
-                        document.body.style.background = '';
-                        document.body.style.transition = '';
-                    }, 2000);
-
-                    showToast('🎉 彩蛋触发！赛博飞升模式开启！🚀✨', 'success');
-
-                    // 第二轮延迟特效
-                    setTimeout(() => spawnEmojiRain(30), 1200);
-                    setTimeout(() => screenFlash('rgba(255,255,255,0.3)', 200), 1800);
+                    fireEasterEgg(e.clientX, e.clientY);
                 }
             });
 
@@ -2253,89 +2757,114 @@
         }
 
         // ==========================================
-        // 26. 光标光晕追踪
+        // 26. 光标光晕追踪（指针移动时才运行循环，收敛后自动停止；触摸设备直接隐藏）
         // ==========================================
         const cursorGlow = document.getElementById('cursor-glow');
-        let glowEnabled = true;
-        let mouseX = -500, mouseY = -500;
-        let currentX = -500, currentY = -500;
+        const finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        if (cursorGlow && finePointer) {
+            let mouseX = -500, mouseY = -500;
+            let currentX = -500, currentY = -500;
+            let glowRafId = null;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
+            function animateGlow() {
+                const dx = mouseX - currentX;
+                const dy = mouseY - currentY;
+                if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
+                    glowRafId = null; // 已收敛，停止循环
+                    return;
+                }
+                currentX += dx * 0.08;
+                currentY += dy * 0.08;
+                cursorGlow.style.left = currentX + 'px';
+                cursorGlow.style.top = currentY + 'px';
+                glowRafId = requestAnimationFrame(animateGlow);
+            }
 
-        // 触摸设备隐藏光晕
-        document.addEventListener('touchstart', () => {
-            if (cursorGlow) cursorGlow.classList.add('hidden-glow');
-        }, { once: true });
-
-        function animateGlow() {
-            if (!cursorGlow) return;
-            currentX += (mouseX - currentX) * 0.08;
-            currentY += (mouseY - currentY) * 0.08;
-            cursorGlow.style.left = currentX + 'px';
-            cursorGlow.style.top = currentY + 'px';
-            requestAnimationFrame(animateGlow);
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!glowRafId) glowRafId = requestAnimationFrame(animateGlow);
+            }, { passive: true });
+        } else if (cursorGlow) {
+            cursorGlow.classList.add('hidden-glow');
         }
-        animateGlow();
 
         // ==========================================
-        // 27. 3D 倾斜卡片效果
+        // 26.5 点击涟漪特效（随动效总开关联动）
         // ==========================================
-        function initTiltCards() {
-            const cards = document.querySelectorAll('.glass-card');
-            cards.forEach(card => {
-                card.classList.add('tilt-card');
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -6;
-                    const rotateY = ((x - centerX) / centerX) * 6;
-                    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
-                    // 动态高光
-                    const shineX = (x / rect.width) * 100;
-                    const shineY = (y / rect.height) * 100;
-                    card.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.25) 0%, var(--glass-bg) 70%)`;
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
-                    card.style.background = '';
-                    card.style.transition = 'transform 0.5s ease, background 0.4s ease, box-shadow 0.35s ease';
-                    setTimeout(() => { card.style.transition = 'transform 0.15s ease-out, box-shadow 0.35s ease, background 0.3s ease'; }, 500);
-                });
-            });
-        }
-        // 初始化并在 DOM 变化后重新绑定
-        setTimeout(initTiltCards, 300);
-        // 针对动态渲染的卡片，在渲染后重新初始化
-        const tiltObserver = new MutationObserver(() => {
-            document.querySelectorAll('.glass-card:not(.tilt-card)').forEach(card => {
-                card.classList.add('tilt-card');
-                // 快进到事件绑定
-            });
-        });
+        document.addEventListener('pointerdown', (e) => {
+            if (!fxEnabled) return;
+            if (e.target.closest && e.target.closest('#command-palette, #shortcut-help, #lightbox')) return;
+            const ri = document.createElement('span');
+            ri.className = 'click-ripple';
+            ri.style.setProperty('--rx', e.clientX + 'px');
+            ri.style.setProperty('--ry', e.clientY + 'px');
+            document.body.appendChild(ri);
+            setTimeout(() => ri.remove(), 700);
+        }, { passive: true });
 
         // ==========================================
-        // 28. 浮动导航点高亮
+        // 27. 3D 倾斜卡片效果（事件委托 + rAF 节流，动态卡片自动生效）
+        // 修复：原 MutationObserver 只加 class 不绑定事件，动态渲染的卡片无倾斜效果
+        // ==========================================
+        (function initTiltCards() {
+            document.querySelectorAll('.glass-card').forEach(card => card.classList.add('tilt-card'));
+
+            let tiltEvent = null;
+            let tiltPending = false;
+
+            function applyTilt() {
+                tiltPending = false;
+                const e = tiltEvent;
+                const card = e && e.target.closest ? e.target.closest('.glass-card') : null;
+                if (!card) return;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
+                const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
+                // 动态高光
+                const shineX = (x / rect.width) * 100;
+                const shineY = (y / rect.height) * 100;
+                card.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.22) 0%, var(--glass-bg) 70%)`;
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                if (!e.target.closest || !e.target.closest('.glass-card')) return;
+                tiltEvent = e;
+                if (!tiltPending) {
+                    tiltPending = true;
+                    requestAnimationFrame(applyTilt);
+                }
+            }, { passive: true });
+
+            document.addEventListener('mouseout', (e) => {
+                const card = e.target.closest ? e.target.closest('.glass-card') : null;
+                if (!card || card.contains(e.relatedTarget)) return;
+                card.style.transition = 'transform 0.5s ease, background 0.4s ease, box-shadow 0.35s ease';
+                card.style.transform = '';
+                card.style.background = '';
+                setTimeout(() => { card.style.transition = ''; }, 500);
+            }, { passive: true });
+        })();
+
+        // ==========================================
+        // 28. 浮动导航点高亮（滚动处理已合并至统一 handler）
+        // 修复：offsetTop 是相对最近定位祖先的值，改用视口坐标计算
         // ==========================================
         const dotNavItems = document.querySelectorAll('.dot-nav-item');
         const sectionIds = Array.from(dotNavItems).map(d => d.dataset.target);
+        const dotSections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
 
-        function updateDotNav() {
+        function updateDotNav(scrollY) {
+            const scrollMid = scrollY + window.innerHeight / 3;
             let currentSection = sectionIds[0];
-            const scrollMid = window.scrollY + window.innerHeight / 3;
-
-            sectionIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.offsetTop <= scrollMid) {
-                    currentSection = id;
+            for (let i = 0; i < dotSections.length; i++) {
+                if (dotSections[i].getBoundingClientRect().top + scrollY <= scrollMid) {
+                    currentSection = sectionIds[i];
                 }
-            });
-
+            }
             dotNavItems.forEach(dot => {
                 dot.classList.toggle('active', dot.dataset.target === currentSection);
             });
@@ -2348,8 +2877,7 @@
             });
         });
 
-        window.addEventListener('scroll', updateDotNav, { passive: true });
-        updateDotNav();
+        updateDotNav(window.scrollY);
 
         // ==========================================
         // 29. 音效反馈系统（Web Audio API）
@@ -2429,14 +2957,13 @@
         function applyAccent(accent) {
             html.setAttribute('data-accent', accent);
             localStorage.setItem('accent', accent);
-            // 更新CSS自定义属性中的品牌色引用
             const style = getComputedStyle(html);
             const accent500 = style.getPropertyValue('--accent-500').trim() || '#ec4899';
-            const accent600 = style.getPropertyValue('--accent-600').trim() || '#db2777';
             // 动态更新光标光晕颜色
             if (cursorGlow) {
                 cursorGlow.style.background = `radial-gradient(circle,${accent500}1e 0%,${accent500}0d 35%,transparent 70%)`;
             }
+            if (onVisualRefresh) onVisualRefresh();
         }
 
         const savedAccent = localStorage.getItem('accent') || 'pink';
@@ -2449,6 +2976,40 @@
             applyAccent(next);
             playSuccess();
             showToast(`🎨 主题色切换为「${accentNames[accentThemes.indexOf(next)]}」`, 'success');
+        }
+
+        // ==========================================
+        // 30.5 全局动效总开关 + 分享
+        // ==========================================
+        let fxEnabled = localStorage.getItem('tachy_fx') !== '0';
+
+        function applyFx() {
+            document.documentElement.classList.toggle('fx-off', !fxEnabled);
+            if (canvas) canvas.style.display = fxEnabled ? '' : 'none';
+            if (cursorGlow) cursorGlow.classList.toggle('hidden-glow', !fxEnabled);
+            if (!fxEnabled && musicAnimId) { cancelAnimationFrame(musicAnimId); musicAnimId = null; }
+            if (fxEnabled && !musicAnimId) drawMusicViz();
+            const fxItem = document.querySelector('.fab-item[data-action="fx"]');
+            if (fxItem) fxItem.firstChild.textContent = fxEnabled ? '💫' : '🫥';
+        }
+
+        function toggleFx() {
+            fxEnabled = !fxEnabled;
+            localStorage.setItem('tachy_fx', fxEnabled ? '1' : '0');
+            applyFx();
+            showToast(fxEnabled ? '💫 动效已开启' : '🫥 动效已关闭（省电模式）', 'info');
+        }
+
+        function sharePage() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: 'Tachy 的个人主页 — 赛博飞升 🚀',
+                    url: location.href,
+                }).catch(() => { /* 用户取消分享 */ });
+            } else {
+                copyText(location.href);
+            }
         }
 
         // ==========================================
@@ -2470,20 +3031,14 @@
                 item.addEventListener('click', () => {
                     const action = item.dataset.action;
                     switch (action) {
-                        case 'theme':
-                            themeToggle.click();
-                            break;
                         case 'accent':
                             cycleAccent();
                             break;
-                        case 'sound':
-                            if (soundToggleBtn) soundToggleBtn.click();
+                        case 'fx':
+                            toggleFx();
                             break;
-                        case 'screenshot':
-                            showToast('📸 按 Ctrl+Shift+S 可截取本页面（浏览器自带截图）', 'info');
-                            break;
-                        case 'top':
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        case 'share':
+                            sharePage();
                             break;
                     }
                     // 关闭菜单
@@ -2517,65 +3072,34 @@
             liveText.textContent = `当前在线 ${online} 人`;
         }
         updateLivePanel();
-        setInterval(updateLivePanel, 15000);
+        let liveTimer = setInterval(updateLivePanel, 15000);
 
-        // ==========================================
-        // 33. 滚动视差效果
-        // ==========================================
-        const blobElements = document.querySelectorAll('.animate-blob');
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            blobElements.forEach((blob, i) => {
-                const speed = 0.03 + i * 0.02;
-                const yOffset = scrollY * speed;
-                const xOffset = scrollY * speed * 0.5;
-                blob.style.transform = `translate(${xOffset}px,${yOffset}px)`;
-            });
-
-            // 粒子画布微动
-            if (canvas) {
-                canvas.style.transform = `translateY(${scrollY * 0.015}px)`;
-            }
-        }, { passive: true });
-
-        // ==========================================
-        // 34. 增强滚动揭示动画（交错延迟）
-        // ==========================================
-        function enhancedReveal() {
-            document.querySelectorAll('.glass-card, .skill-bar-fill, .timeline-item').forEach((el, i) => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight - 50) {
-                    if (!el.dataset.revealed) {
-                        el.dataset.revealed = '1';
-                        el.style.transitionDelay = (i % 4) * 0.08 + 's';
-                        el.classList.add('visible');
-                    }
-                }
-            });
-        }
-        window.addEventListener('scroll', enhancedReveal, { passive: true });
-        setTimeout(enhancedReveal, 400);
-
-        // ==========================================
-        // 35. 键盘快捷键扩展
-        // ==========================================
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+Shift+C 切换主题色
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-                cycleAccent();
-            }
-            // Ctrl+Shift+S 切换音效
-            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
-                e.preventDefault();
-                if (soundToggleBtn) soundToggleBtn.click();
-            }
-            // Ctrl+M 切换暗色模式（额外快捷键）
-            if (e.ctrlKey && e.key === 'm') {
-                e.preventDefault();
-                themeToggle.click();
+        // 页面隐藏时暂停低频定时器，回到页面时立即刷新
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(clockTimer);
+                clearInterval(liveTimer);
+            } else {
+                updateClock();
+                updateLivePanel();
+                clockTimer = setInterval(updateClock, 1000);
+                liveTimer = setInterval(updateLivePanel, 15000);
             }
         });
+
+        // ==========================================
+        // 33. 滚动视差
+        // 说明：blob 由 CSS animate-blob 无限动画驱动，内联 transform 会被动画覆盖（原代码无效），
+        // 因此仅保留粒子画布视差，已合并至统一滚动 handler。
+        // ==========================================
+
+        // ==========================================
+        // 34. 滚动揭示动画（见第 13 节 IntersectionObserver 实现）
+        // ==========================================
+
+        // ==========================================
+        // 35. 键盘快捷键扩展（已合并至第 16 节）
+        // ==========================================
 
         // ==========================================
         // 37. 嵌入式音乐播放器（Radio Browser API + 音频可视化 + 碟片）
@@ -2603,6 +3127,11 @@
         let musicAnimId = null;
         let stationHistory = [];
         let currentStation = null;
+        let stallCheck = null;         // 流中断检测定时器（原代码未声明，隐式创建了全局变量）
+        let autoSwitchPending = false; // 防止 error 事件与 play() 失败双重触发重试
+        let tonearmTimer = null;       // 唱臂落下延迟定时器
+        let zeroFrames = 0;            // 可视化连续静音帧计数（CORS 受限降级检测）
+        let musicVizMode = localStorage.getItem('tachy_viz_mode') || 'bars'; // bars / wave / ring
         const MAX_HISTORY = 30;
 
         // --- 精选电台曲库（多源 HTTPS 流，稳定可靠） ---
@@ -2650,7 +3179,6 @@
 
             // ===== Electronic & Ambient =====
             { name:'NORA Webstream', tags:'electronic,ambient,experimental', url_resolved:'https://streams.norawebstreams.de/nora-live/mp3-192/streams.norawebstreams.de/' },
-            { name:'Deep House Radio', tags:'deephouse,electronic,chill', url_resolved:'https://stream.deephouse radio.com/deephouse' },
             { name:'Ambient Sleeping Pill', tags:'ambient,sleep,drone', url_resolved:'https://radio.stereoscenic.com/asp-mp3' },
             { name:'Sleep Bot Radio', tags:'ambient,sleep,minimal', url_resolved:'https://stream.sleepbot.com/radio/8000/listen.mp3' },
             { name:'Bluemars - Cryosleep', tags:'ambient,space,drone', url_resolved:'https://stream.bluemars.com/cryosleep' },
@@ -2703,7 +3231,6 @@
                 musicAnalyser.connect(musicVizCtx.destination);
                 musicVizData = new Uint8Array(musicAnalyser.frequencyBinCount);
                 musicVizEnabled = true;
-                console.log('✅ 音频可视化已连接');
             } catch (e) {
                 console.warn('⚠️ 音频可视化 CORS 受限，使用模拟模式:', e.message);
                 musicVizEnabled = false;
@@ -2711,22 +3238,53 @@
             }
         }
 
-        function drawMusicViz() {
-            if (!visualizerMain || !vizMainCtx) return;
-            const rect = visualizerMain.getBoundingClientRect();
-            const w = visualizerMain.width = rect.width || 600;
-            const h = visualizerMain.height = rect.height || 100;
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
-            visualizerMain.width = w * dpr;
-            visualizerMain.height = h * dpr;
-            vizMainCtx.scale(dpr, dpr);
+        // --- 可视化样式与尺寸缓存（避免每帧读取计算样式/重建画布） ---
+        const vizAccent = { accent500: '#ec4899', accent300: '#f9a8d4', dark: false };
+        const vizSize = { w: 0, h: 0, dpr: 0 };
 
+        function refreshVizStyle() {
+            const s = getComputedStyle(html);
+            vizAccent.accent500 = s.getPropertyValue('--accent-500').trim() || '#ec4899';
+            vizAccent.accent300 = s.getPropertyValue('--accent-300').trim() || '#f9a8d4';
+            vizAccent.dark = html.getAttribute('data-theme') === 'dark';
+        }
+
+        function syncVizSize() {
+            if (!visualizerMain) return;
+            const rect = visualizerMain.getBoundingClientRect();
+            vizSize.w = Math.max(1, Math.round(rect.width));
+            vizSize.h = Math.max(1, Math.round(rect.height));
+            vizSize.dpr = Math.min(window.devicePixelRatio || 1, 2);
+            visualizerMain.width = vizSize.w * vizSize.dpr;
+            visualizerMain.height = vizSize.h * vizSize.dpr;
+        }
+
+        refreshVizStyle();
+        syncVizSize();
+        onVisualRefresh = refreshVizStyle;
+        window.addEventListener('resize', syncVizSize, { passive: true });
+
+        function drawMusicViz() {
+            if (!visualizerMain || !vizMainCtx || !vizSize.w) return;
+            const { w, h, dpr } = vizSize;
+            vizMainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
             vizMainCtx.clearRect(0, 0, w, h);
+            vizMainCtx.fillStyle = vizAccent.dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
+            vizMainCtx.fillRect(0, 0, w, h);
 
             let data;
             if (musicVizEnabled && musicAnalyser && musicVizData) {
                 musicAnalyser.getByteFrequencyData(musicVizData);
                 data = musicVizData;
+                // CORS 受限时频谱恒为零 → 连续约 2 秒静音自动降级为模拟模式
+                let sum = 0;
+                for (let i = 0; i < data.length; i++) sum += data[i];
+                if (sum === 0 && musicPlaying) {
+                    zeroFrames++;
+                    if (zeroFrames > 120) { musicVizEnabled = false; zeroFrames = 0; }
+                } else {
+                    zeroFrames = 0;
+                }
             } else {
                 if (!musicVizData) musicVizData = new Uint8Array(128);
                 const t = Date.now() / 1000;
@@ -2741,19 +3299,12 @@
                 data = musicVizData;
             }
 
-            const barCount = Math.min(data.length, 96);
-            const barW = Math.max(2, (w - barCount * 1.5) / barCount);
-            const gap = 1.5;
-            const accent500 = getComputedStyle(html).getPropertyValue('--accent-500').trim() || '#ec4899';
-            const accent300 = getComputedStyle(html).getPropertyValue('--accent-300').trim() || '#f9a8d4';
-            const isDark = html.getAttribute('data-theme') === 'dark';
-
-            vizMainCtx.fillStyle = isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
-            vizMainCtx.fillRect(0, 0, w, h);
+            const count = Math.min(data.length, 96);
+            const { accent500, accent300 } = vizAccent;
 
             // 首次随机打乱频率→条形映射，之后保持不变
-            if (!musicVizMap || musicVizMap.length !== barCount) {
-                musicVizMap = Array.from({length: barCount}, (_, i) => i);
+            if (!musicVizMap || musicVizMap.length !== count) {
+                musicVizMap = Array.from({ length: count }, (_, i) => i);
                 // Fisher-Yates 洗牌
                 for (let i = musicVizMap.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -2761,41 +3312,77 @@
                 }
             }
 
-            for (let i = 0; i < barCount; i++) {
-                const freqIdx = musicVizMap[i] % data.length;
-                const val = data[freqIdx] || 0;
-                const bh = Math.max(2, (val / 255) * h * 0.9);
-                const x = i * (barW + gap);
-                const y = h - bh;
-
-                const barGrad = vizMainCtx.createLinearGradient(0, h, 0, y);
-                barGrad.addColorStop(0, accent300 + '30');
-                barGrad.addColorStop(0.5, accent500 + '88');
-                barGrad.addColorStop(1, accent500);
-                vizMainCtx.fillStyle = barGrad;
-
-                if (vizMainCtx.roundRect) {
-                    vizMainCtx.beginPath();
-                    vizMainCtx.roundRect(x, y, barW, bh, [barW / 2, barW / 2, 0, 0]);
-                    vizMainCtx.fill();
-                } else {
-                    vizMainCtx.fillRect(x, y, barW, bh);
+            if (musicVizMode === 'wave') {
+                // ===== 波形模式 =====
+                vizMainCtx.beginPath();
+                for (let i = 0; i < count; i++) {
+                    const val = data[musicVizMap[i] % data.length] || 0;
+                    const nx = i / (count - 1);
+                    const yy = h / 2 - (val / 255) * (h / 2 - 4);
+                    if (i === 0) vizMainCtx.moveTo(nx * w, yy);
+                    else vizMainCtx.lineTo(nx * w, yy);
                 }
-
-                if (bh > 4) {
-                    vizMainCtx.fillStyle = accent500;
+                vizMainCtx.lineTo(w, h); vizMainCtx.lineTo(0, h); vizMainCtx.closePath();
+                const wGrad = vizMainCtx.createLinearGradient(0, 0, 0, h);
+                wGrad.addColorStop(0, accent500 + 'aa');
+                wGrad.addColorStop(1, accent500 + '08');
+                vizMainCtx.fillStyle = wGrad;
+                vizMainCtx.fill();
+                vizMainCtx.strokeStyle = accent500;
+                vizMainCtx.lineWidth = 2;
+                vizMainCtx.stroke();
+            } else if (musicVizMode === 'ring') {
+                // ===== 圆环频谱模式 =====
+                const cx = w / 2, cy = h / 2;
+                const maxR = Math.min(w, h) / 2 - 6;
+                const innerR = Math.max(10, maxR - 26);
+                for (let i = 0; i < count; i++) {
+                    const val = data[musicVizMap[i] % data.length] || 0;
+                    const angle = (Math.PI * 2 * i) / count - Math.PI / 2;
+                    const len = Math.max(2, (val / 255) * (maxR - innerR));
+                    const cos = Math.cos(angle), sin = Math.sin(angle);
+                    vizMainCtx.strokeStyle = accent500;
+                    vizMainCtx.globalAlpha = 0.35 + (val / 255) * 0.65;
+                    vizMainCtx.lineWidth = 2;
                     vizMainCtx.beginPath();
-                    vizMainCtx.arc(x + barW / 2, y + 2, barW * 0.45, 0, Math.PI * 2);
-                    vizMainCtx.fill();
+                    vizMainCtx.moveTo(cx + cos * innerR, cy + sin * innerR);
+                    vizMainCtx.lineTo(cx + cos * (innerR + len), cy + sin * (innerR + len));
+                    vizMainCtx.stroke();
+                }
+                vizMainCtx.globalAlpha = 1;
+            } else {
+                // ===== 柱状模式（默认） =====
+                const barW = Math.max(2, (w - count * 1.5) / count);
+                const gap = 1.5;
+                for (let i = 0; i < count; i++) {
+                    const freqIdx = musicVizMap[i] % data.length;
+                    const val = data[freqIdx] || 0;
+                    const bh = Math.max(2, (val / 255) * h * 0.9);
+                    const x = i * (barW + gap);
+                    const y = h - bh;
+
+                    const barGrad = vizMainCtx.createLinearGradient(0, h, 0, y);
+                    barGrad.addColorStop(0, accent300 + '30');
+                    barGrad.addColorStop(0.5, accent500 + '88');
+                    barGrad.addColorStop(1, accent500);
+                    vizMainCtx.fillStyle = barGrad;
+
+                    if (vizMainCtx.roundRect) {
+                        vizMainCtx.beginPath();
+                        vizMainCtx.roundRect(x, y, barW, bh, [barW / 2, barW / 2, 0, 0]);
+                        vizMainCtx.fill();
+                    } else {
+                        vizMainCtx.fillRect(x, y, barW, bh);
+                    }
+
+                    if (bh > 4) {
+                        vizMainCtx.fillStyle = accent500;
+                        vizMainCtx.beginPath();
+                        vizMainCtx.arc(x + barW / 2, y + 2, barW * 0.45, 0, Math.PI * 2);
+                        vizMainCtx.fill();
+                    }
                 }
             }
-
-            vizMainCtx.globalAlpha = 0.15;
-            vizMainCtx.save();
-            vizMainCtx.scale(1, -1);
-            vizMainCtx.drawImage(visualizerMain, 0, 0, w * dpr, -h * dpr / 2, 0, 0, w, h / 2);
-            vizMainCtx.restore();
-            vizMainCtx.globalAlpha = 1;
 
             musicAnimId = requestAnimationFrame(drawMusicViz);
         }
@@ -2810,15 +3397,13 @@
                 vinylDisc.classList.toggle('glowing', musicPlaying);
             }
             if (tonearm) {
-                // 唱臂动画：播放时延迟落下模拟针降
+                // 唱臂动画：播放时延迟落下模拟针降（清除旧定时器避免状态竞争）
+                clearTimeout(tonearmTimer);
                 if (musicPlaying) {
-                    setTimeout(() => tonearm.classList.add('playing'), 120);
+                    tonearmTimer = setTimeout(() => tonearm.classList.add('playing'), 120);
                 } else {
                     tonearm.classList.remove('playing');
                 }
-            }
-            if (musicRandomBtn) {
-                musicRandomBtn.style.color = 'var(--accent-500,#ec4899)';
             }
         }
 
@@ -2826,9 +3411,20 @@
             currentStation = station;
             const name = station.name || station.title || '未知电台';
             const tags = station.tags || station.artist || '';
+            const artistText = tags ? tags.split(',').slice(0, 3).join(' · ') : '发现世界各地的音乐';
             if (musicTitleEl) musicTitleEl.textContent = name;
-            if (musicArtistEl) musicArtistEl.textContent = tags ? tags.split(',').slice(0,3).join(' · ') : '发现世界各地的音乐';
+            if (musicArtistEl) musicArtistEl.textContent = artistText;
             if (vinylLabel) vinylLabel.textContent = name.substring(0, 12);
+            // 更新系统媒体元数据（锁屏/媒体中心显示曲目信息）
+            if ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') {
+                try {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: name,
+                        artist: artistText,
+                        album: 'Tachy 音乐盒子 · 随机电台'
+                    });
+                } catch (e) { /* 忽略 */ }
+            }
         }
 
         async function playRandomStation(retryCount = 0) {
@@ -2883,7 +3479,8 @@
                 updateMusicUI();
                 blacklistStation(station);
                 showToast(`⚠️ 切换中...(${retryCount + 1}/${5})`, 'warning');
-                setTimeout(() => playRandomStation(retryCount + 1), 400);
+                autoSwitchPending = true;
+                setTimeout(() => { autoSwitchPending = false; playRandomStation(retryCount + 1); }, 400);
             }
         }
 
@@ -2913,7 +3510,8 @@
                         musicPlaying = false;
                         updateMusicUI();
                         showToast('⚠️ 播放失败，切换中...', 'warning');
-                        setTimeout(() => playRandomStation(1), 400);
+                        autoSwitchPending = true;
+                        setTimeout(() => { autoSwitchPending = false; playRandomStation(1); }, 400);
                     });
                 }, 180);
                 playClick();
@@ -2935,11 +3533,88 @@
         });
         if (musicRandomBtn) musicRandomBtn.addEventListener('click', () => { playClick(); playRandomStation(); });
 
+        // 可视化样式切换（柱状/波形/圆环）
+        const musicVizBtn = document.getElementById('music-viz');
+        const VIZ_MODES = ['bars', 'wave', 'ring'];
+        const VIZ_NAMES = { bars: '柱状频谱', wave: '波形', ring: '圆环频谱' };
+        if (musicVizBtn) {
+            musicVizBtn.addEventListener('click', () => {
+                const idx = VIZ_MODES.indexOf(musicVizMode);
+                musicVizMode = VIZ_MODES[(idx + 1) % VIZ_MODES.length];
+                localStorage.setItem('tachy_viz_mode', musicVizMode);
+                showToast('📊 可视化切换为：' + (VIZ_NAMES[musicVizMode] || musicVizMode), 'info');
+                playClick();
+            });
+        }
+
+        // 睡眠定时器（关 → 30 → 60 → 90 分钟循环）
+        const musicSleepBtn = document.getElementById('music-sleep');
+        const SLEEP_OPTIONS = [0, 30, 60, 90];
+        let sleepIdx = 0;
+        let sleepTimer = null;
+        let sleepEndAt = null;
+        function updateSleepBtn() {
+            if (!musicSleepBtn) return;
+            const active = sleepEndAt != null;
+            musicSleepBtn.textContent = active ? '🌙' : '⏱';
+            musicSleepBtn.title = active
+                ? `睡眠定时进行中：约 ${Math.max(1, Math.round((sleepEndAt - Date.now()) / 60000))} 分钟后暂停音乐`
+                : '睡眠定时：关/30/60/90 分钟';
+        }
+        function setSleepTimer(minutes) {
+            clearTimeout(sleepTimer);
+            if (!minutes) {
+                sleepEndAt = null;
+                sleepIdx = 0;
+                updateSleepBtn();
+                showToast('⏱ 睡眠定时已取消', 'info');
+                return;
+            }
+            sleepEndAt = Date.now() + minutes * 60000;
+            sleepTimer = setTimeout(() => {
+                sleepEndAt = null;
+                sleepIdx = 0;
+                updateSleepBtn();
+                if (musicPlaying) toggleMusicPlay();
+                showToast('🌙 睡眠定时到，音乐已暂停，晚安～', 'success');
+            }, minutes * 60000);
+            updateSleepBtn();
+            showToast(`⏱ 已设定 ${minutes} 分钟睡眠定时`, 'success');
+        }
+        if (musicSleepBtn) {
+            musicSleepBtn.addEventListener('click', () => {
+                playClick();
+                sleepIdx = (sleepIdx + 1) % SLEEP_OPTIONS.length;
+                setSleepTimer(SLEEP_OPTIONS[sleepIdx]);
+            });
+        }
+
+        // 音量持久化
+        const savedVolume = parseFloat(localStorage.getItem('tachy_music_volume'));
+        if (!isNaN(savedVolume) && musicVolumeSlider) musicVolumeSlider.value = savedVolume;
         if (musicVolumeSlider) {
             musicAudio.volume = musicVolumeSlider.value / 100;
             musicVolumeSlider.addEventListener('input', () => {
                 musicAudio.volume = musicVolumeSlider.value / 100;
+                localStorage.setItem('tachy_music_volume', musicVolumeSlider.value);
             });
+        }
+
+        // 系统媒体控制（锁屏/媒体键/蓝牙耳机按键）
+        if ('mediaSession' in navigator) {
+            try {
+                navigator.mediaSession.setActionHandler('play', () => { if (!musicPlaying) toggleMusicPlay(); });
+                navigator.mediaSession.setActionHandler('pause', () => { if (musicPlaying) toggleMusicPlay(); });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { if (currentStation) playRandomStation(); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    if (stationHistory.length > 1) {
+                        stationHistory.pop();
+                        playStation(stationHistory[stationHistory.length - 1]);
+                    } else {
+                        playRandomStation();
+                    }
+                });
+            } catch (e) { /* 不支持则静默忽略 */ }
         }
 
         // 流错误自动切换（标记失败流，跳过重试）
@@ -2949,22 +3624,26 @@
             if (currentStation) blacklistStation(currentStation);
             musicPlaying = false;
             updateMusicUI();
+            if (autoSwitchPending) return; // play() 失败已触发重试，避免双重切换
             stationFailCount++;
             showToast(`⚠️ 连接失败，自动切换...(${stationFailCount})`, 'warning');
-            setTimeout(() => playRandomStation(stationFailCount), 600);
+            autoSwitchPending = true;
+            setTimeout(() => { autoSwitchPending = false; playRandomStation(stationFailCount); }, 600);
         });
 
         // 播放成功时重置失败计数
         musicAudio.addEventListener('playing', () => {
             stationFailCount = 0;
+            autoSwitchPending = false;
             if (stallCheck) clearInterval(stallCheck);
             stallCheck = setInterval(() => {
-                if (musicPlaying && musicAudio.paused) {
+                if (musicPlaying && musicAudio.paused && !autoSwitchPending) {
                     if (currentStation) blacklistStation(currentStation);
                     musicPlaying = false;
                     updateMusicUI();
                     showToast('⚠️ 连接中断，切换...', 'warning');
-                    playRandomStation();
+                    autoSwitchPending = true;
+                    setTimeout(() => { autoSwitchPending = false; playRandomStation(); }, 400);
                 }
             }, 8000);
         });
@@ -2989,25 +3668,222 @@
             });
         }
 
-        // --- 启动可视化 ---
+        // --- 启动可视化（尺寸与重绘已由 syncVizSize / resize 监听维护） ---
         drawMusicViz();
 
-        // --- 响应式重绘 ---
-        window.addEventListener('resize', () => {
-            if (visualizerMain) {
-                const rect = visualizerMain.getBoundingClientRect();
-                visualizerMain.width = rect.width;
-                visualizerMain.height = rect.height;
+        // ==========================================
+        // 38. 命令面板（Ctrl+K / '/'）+ 快捷键帮助（'?'）+ 科乐美秘技
+        // ==========================================
+        const cmdPalette = document.getElementById('command-palette');
+        const cmdInput = document.getElementById('cmd-input');
+        const cmdResults = document.getElementById('cmd-results');
+        const helpOverlay = document.getElementById('shortcut-help');
+        const helpClose = document.getElementById('shortcut-close');
+
+        const scrollToSection = (id) => {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        const CMD_ACTIONS = [
+            { icon:'🏠', title:'回到顶部', hint:'hero', keywords:'top home 首页', run:() => window.scrollTo({ top:0, behavior:'smooth' }) },
+            { icon:'👤', title:'关于我', hint:'about', keywords:'关于 about', run:() => scrollToSection('about') },
+            { icon:'🎵', title:'音乐盒子', hint:'music', keywords:'音乐 电台 music', run:() => scrollToSection('music-section') },
+            { icon:'🧠', title:'技术栈', hint:'skills', keywords:'技能 skills', run:() => scrollToSection('skills') },
+            { icon:'🛤️', title:'我的历程', hint:'timeline', keywords:'历程 timeline', run:() => scrollToSection('timeline') },
+            { icon:'🚧', title:'项目作品', hint:'projects', keywords:'项目 projects', run:() => scrollToSection('projects') },
+            { icon:'📷', title:'照片墙', hint:'gallery', keywords:'照片 画廊 gallery', run:() => scrollToSection('gallery') },
+            { icon:'💬', title:'留言板', hint:'guestbook', keywords:'留言 guestbook', run:() => scrollToSection('guestbook') },
+            { icon:'📮', title:'找到我', hint:'contact', keywords:'联系 contact', run:() => scrollToSection('contact') },
+            { icon:'🌓', title:'切换暗色 / 亮色模式', hint:'theme', keywords:'主题 暗色 亮色 theme dark light', run:() => themeToggle.click() },
+            { icon:'🎨', title:'切换主题色', hint:'accent', keywords:'主题色 换色 accent', run:() => cycleAccent() },
+            { icon:'▶️', title:'播放 / 暂停音乐', hint:'play', keywords:'播放 暂停 音乐 play music', run:() => toggleMusicPlay() },
+            { icon:'⏭️', title:'下一个电台', hint:'next', keywords:'下一个 电台 next', run:() => playRandomStation() },
+            { icon:'🔊', title:'开关音效', hint:'sound', keywords:'音效 sound', run:() => { if (soundToggleBtn) soundToggleBtn.click(); } },
+            { icon:'✨', title:'触发彩蛋：赛博飞升', hint:'egg', keywords:'彩蛋 飞升 egg', run:() => fireEasterEgg() },
+            { icon:'💬', title:'复制微信号', hint:'wechat', keywords:'微信 复制 wechat', run:() => copyText('zzydhaoren') },
+            { icon:'🐧', title:'复制 QQ 号', hint:'qq', keywords:'qq 复制', run:() => copyText('2504419411') },
+            { icon:'🐙', title:'打开 GitHub', hint:'github', keywords:'github 仓库', run:() => window.open('https://github.com/tachy001', '_blank', 'noopener') },
+            { icon:'💫', title:'开关页面动效', hint:'fx', keywords:'动效 省电 fx', run:() => toggleFx() },
+            { icon:'📤', title:'分享本页', hint:'share', keywords:'分享 share', run:() => sharePage() },
+            { icon:'⌨️', title:'快捷键一览', hint:'help', keywords:'快捷键 帮助 help', run:() => openHelp() },
+        ];
+
+        let cmdFiltered = CMD_ACTIONS;
+        let cmdSelected = 0;
+
+        function renderCmd() {
+            if (!cmdResults) return;
+            if (!cmdFiltered.length) {
+                cmdResults.innerHTML = '<div class="cmd-empty">没有匹配的命令 🤔</div>';
+                return;
+            }
+            cmdResults.innerHTML = '';
+            cmdFiltered.forEach((c, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'cmd-item' + (i === cmdSelected ? ' selected' : '');
+                const icon = document.createElement('span');
+                icon.className = 'cmd-item-icon';
+                icon.textContent = c.icon;
+                const title = document.createElement('span');
+                title.className = 'cmd-item-title';
+                title.textContent = c.title;
+                const hint = document.createElement('span');
+                hint.className = 'cmd-item-hint';
+                hint.textContent = c.hint;
+                btn.append(icon, title, hint);
+                btn.addEventListener('click', () => { closeCmd(); c.run(); });
+                btn.addEventListener('mouseenter', () => {
+                    if (cmdSelected !== i) { cmdSelected = i; renderCmd(); }
+                });
+                cmdResults.appendChild(btn);
+            });
+        }
+
+        function filterCmd(q) {
+            q = q.trim().toLowerCase();
+            cmdFiltered = !q ? CMD_ACTIONS : CMD_ACTIONS.filter(c => (c.title + ' ' + c.keywords).toLowerCase().includes(q));
+            cmdSelected = 0;
+            renderCmd();
+        }
+
+        function scrollSelectedIntoView() {
+            const sel = cmdResults.querySelectorAll('.cmd-item')[cmdSelected];
+            if (sel) sel.scrollIntoView({ block: 'nearest' });
+        }
+
+        function openCmd() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.add('active');
+            cmdInput.value = '';
+            filterCmd('');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => cmdInput.focus(), 30);
+        }
+        function closeCmd() {
+            if (!cmdPalette) return;
+            cmdPalette.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        function openHelp() {
+            if (!helpOverlay) return;
+            helpOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeHelp() {
+            if (!helpOverlay) return;
+            helpOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (cmdPalette && cmdInput) {
+            cmdInput.addEventListener('input', () => filterCmd(cmdInput.value));
+            cmdInput.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    cmdSelected = (cmdSelected + 1) % Math.max(cmdFiltered.length, 1);
+                    renderCmd(); scrollSelectedIntoView();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    cmdSelected = (cmdSelected - 1 + Math.max(cmdFiltered.length, 1)) % Math.max(cmdFiltered.length, 1);
+                    renderCmd(); scrollSelectedIntoView();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const c = cmdFiltered[cmdSelected];
+                    if (c) { closeCmd(); c.run(); }
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeCmd();
+                }
+            });
+            cmdPalette.addEventListener('click', (e) => { if (e.target === cmdPalette) closeCmd(); });
+        }
+        if (helpOverlay) {
+            helpOverlay.addEventListener('click', (e) => { if (e.target === helpOverlay) closeHelp(); });
+        }
+        if (helpClose) helpClose.addEventListener('click', closeHelp);
+
+        // 全局开关（在输入框内输入 '/'、'?' 时不拦截）
+        document.addEventListener('keydown', (e) => {
+            const t = e.target;
+            const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+            if ((e.ctrlKey && e.key.toLowerCase() === 'k') || (!typing && e.key === '/')) {
+                e.preventDefault();
+                if (cmdPalette.classList.contains('active')) closeCmd(); else openCmd();
+                return;
+            }
+            if (!typing && e.key === '?') {
+                e.preventDefault();
+                if (helpOverlay.classList.contains('active')) closeHelp(); else openHelp();
+                return;
+            }
+            if (e.key === 'Escape') {
+                if (cmdPalette.classList.contains('active')) closeCmd();
+                else if (helpOverlay.classList.contains('active')) closeHelp();
             }
         });
 
-        console.log('%c📻 音乐盒子就绪 — Radio Browser API + 碟片可视化', 'font-size:12px;color:#ec4899;');
+        // 科乐美秘技：↑ ↑ ↓ ↓ ← → ← → B A
+        const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let konamiIdx = 0;
+        document.addEventListener('keydown', (e) => {
+            const t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+            const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+            konamiIdx = (k === KONAMI[konamiIdx]) ? konamiIdx + 1 : (k === KONAMI[0] ? 1 : 0);
+            if (konamiIdx === KONAMI.length) {
+                konamiIdx = 0;
+                fireEasterEgg();
+            }
+        });
 
         // ==========================================
-        // 36. 初始化完成日志
+        // 40. 节日模式（当日显示横幅，点击放烟花）
         // ==========================================
-        console.log('%c✨ 所有增强功能已就绪！', 'font-size:14px;color:#8b5cf6;');
-        console.log('%c🎨 Ctrl+Shift+C 换主题色 | 🔇 Ctrl+Shift+S 开关音效 | 🌓 Ctrl+D/M 切换模式', 'font-size:11px;color:#9ca3af;');
+        (function initFestival() {
+            const FESTIVALS = [
+                { m: 0, d: 1, name: '元旦', emoji: '🎆' },
+                { m: 1, d: 14, name: '情人节', emoji: '💝' },
+                { m: 2, d: 8, name: '妇女节', emoji: '🌸' },
+                { m: 4, d: 1, name: '劳动节', emoji: '🛠️' },
+                { m: 5, d: 1, name: '儿童节', emoji: '🍭' },
+                { m: 9, d: 1, name: '国庆节', emoji: '🇨🇳' },
+                { m: 11, d: 24, name: '平安夜', emoji: '🎄' },
+                { m: 11, d: 25, name: '圣诞节', emoji: '🎅' },
+                { m: 11, d: 31, name: '跨年夜', emoji: '🎇' },
+            ];
+            const now = new Date();
+            const fest = FESTIVALS.find(f => f.m === now.getMonth() && f.d === now.getDate());
+            if (!fest) return;
+            if (sessionStorage.getItem('festival_closed') === fest.name) return;
+
+            const banner = document.createElement('div');
+            banner.id = 'festival-banner';
+            banner.setAttribute('role', 'button');
+            banner.setAttribute('aria-label', `${fest.name}快乐，点击放烟花`);
+            banner.innerHTML = `<span>${fest.emoji} ${fest.name}快乐！点我放烟花 🎆</span><button class="fb-close" aria-label="关闭">✕</button>`;
+            document.body.appendChild(banner);
+            banner.addEventListener('click', (e) => {
+                if (e.target.classList.contains('fb-close')) {
+                    sessionStorage.setItem('festival_closed', fest.name);
+                    banner.remove();
+                    return;
+                }
+                fireEasterEgg();
+            });
+        })();
+
+        // ==========================================
+        // 36. 滚动揭示初始化（需在所有动态渲染完成后调用）
+        // ==========================================
+        initReveal();
+
+        // 初始应用动效开关状态（需在音乐可视化模块初始化之后）
+        applyFx();
+
+        console.log('%c TACHY ', 'background:#ec4899;color:#fff;font-size:14px;font-weight:bold;padding:4px 10px;border-radius:6px;');
+        console.log('%c✨ Ctrl+K 命令面板 | ? 快捷键 | Ctrl+D/M 主题 | Ctrl+Shift+C 换色 | Ctrl+Shift+S 音效 | ↑↑↓↓←→←→BA 彩蛋', 'font-size:12px;color:#8b5cf6;');
 
     })();
     </script>

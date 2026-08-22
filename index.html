@@ -57,11 +57,19 @@
     <style>
         /* ========== CSS 变量 ========== */
         :root {
+            /* 主题色默认值（樱花粉），会被 [data-accent] 与 JS 覆盖 */
+            --accent-50: #fdf2f8; --accent-100: #fce7f3; --accent-200: #fbcfe8;
+            --accent-300: #f9a8d4; --accent-400: #f472b6; --accent-500: #ec4899;
+            --accent-600: #db2777; --accent-700: #be185d;
+            /* accent-500 / accent-200 的 RGB 分量，供 rgba() 动态拼透明度 */
+            --accent-rgb: 236,72,153;
+            --accent-soft-rgb: 251,207,232;
+
             --glass-bg: rgba(255,255,255,0.72);
             --glass-border: rgba(255,255,255,0.9);
-            --glass-shadow: rgba(251,207,232,0.25);
+            --glass-shadow: rgba(var(--accent-soft-rgb),0.25);
             --bg: #fafafa;
-            --bg-gradient: linear-gradient(135deg, #fdf2f8 0%, #ffffff 30%, #fce7f3 60%, #fdf2f8 100%);
+            --bg-gradient: linear-gradient(135deg, var(--accent-50) 0%, #ffffff 30%, var(--accent-100) 60%, var(--accent-50) 100%);
             --text: #1f2937;
             --text-secondary: #6b7280;
             --card-bg: rgba(255,255,255,0.72);
@@ -69,14 +77,14 @@
             --skill-track: #e5e7eb;
             --tag-bg: rgba(255,255,255,0.8);
             --input-bg: rgba(255,255,255,0.7);
-            --timeline-line: #fbcfe8;
+            --timeline-line: var(--accent-200);
         }
 
         /* 暗色模式 */
         [data-theme="dark"] {
             --glass-bg: rgba(30,25,35,0.78);
             --glass-border: rgba(255,255,255,0.08);
-            --glass-shadow: rgba(236,72,153,0.12);
+            --glass-shadow: rgba(var(--accent-rgb),0.12);
             --bg: #1a1025;
             --bg-gradient: linear-gradient(135deg, #1a1025 0%, #1e1630 30%, #20102a 60%, #1a1025 100%);
             --text: #e5e7eb;
@@ -110,8 +118,8 @@
         /* 滚动条 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #f9a8d4; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f472b6; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-300); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-400); }
 
         /* ========== 加载动画 ========== */
         #page-loader {
@@ -123,8 +131,8 @@
         #page-loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         .loader-spinner {
             width: 48px; height: 48px;
-            border: 3px solid #f9a8d4;
-            border-top-color: #ec4899;
+            border: 3px solid var(--accent-300);
+            border-top-color: var(--accent-500);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -152,18 +160,18 @@
             border-bottom: 1px solid var(--glass-border);
         }
         .nav-link { position: relative; color: var(--text-secondary); transition: color 0.3s; }
-        .nav-link:hover { color: #ec4899; }
+        .nav-link:hover { color: var(--accent-500); }
         .nav-link::after {
             content: ''; position: absolute; bottom: -4px; left: 50%;
             transform: translateX(-50%) scaleX(0); width: 20px; height: 2px;
-            background: #ec4899; border-radius: 2px; transition: transform 0.3s ease;
+            background: var(--accent-500); border-radius: 2px; transition: transform 0.3s ease;
         }
         .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
 
         /* ========== 技能进度条 ========== */
         .skill-bar-fill {
             height: 6px; border-radius: 10px;
-            background: linear-gradient(90deg, #f9a8d4, #ec4899, #db2777);
+            background: linear-gradient(90deg, var(--accent-300), var(--accent-500), var(--accent-600));
             background-size: 200% 100%;
             animation: gradientBar 4s ease infinite;
             width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
@@ -176,7 +184,7 @@
         /* ========== 打字效果 ========== */
         .typewriter-cursor {
             display: inline-block; width: 2px; height: 1.2em;
-            background: #ec4899; margin-left: 2px;
+            background: var(--accent-500); margin-left: 2px;
             animation: blink 1s step-end infinite;
         }
         @keyframes blink { 50% { opacity: 0; } }
@@ -186,25 +194,25 @@
             display: flex; align-items: center; justify-content: center;
             width: 42px; height: 42px; border-radius: 12px;
             background: var(--tag-bg);
-            border: 1px solid rgba(251,207,232,0.3);
+            border: 1px solid rgba(var(--accent-soft-rgb),0.3);
             color: var(--text-secondary);
             transition: all 0.3s ease;
         }
         .social-icon-link:hover {
-            color: #ec4899; background: #fff;
-            border-color: #f9a8d4; transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(251,207,232,0.4);
+            color: var(--accent-500); background: #fff;
+            border-color: var(--accent-300); transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(var(--accent-soft-rgb),0.4);
         }
         [data-theme="dark"] .social-icon-link:hover {
-            color: #f9a8d4; background: rgba(255,255,255,0.1);
-            border-color: rgba(236,72,153,0.3);
-            box-shadow: 0 8px 20px rgba(236,72,153,0.15);
+            color: var(--accent-300); background: rgba(255,255,255,0.1);
+            border-color: rgba(var(--accent-rgb),0.3);
+            box-shadow: 0 8px 20px rgba(var(--accent-rgb),0.15);
         }
 
         /* ========== 暗色模式切换开关 ========== */
         .theme-toggle {
             position: relative; width: 52px; height: 28px;
-            background: #f9a8d4; border-radius: 14px; cursor: pointer;
+            background: var(--accent-300); border-radius: 14px; cursor: pointer;
             transition: background 0.3s;
         }
         .theme-toggle::after {
@@ -212,7 +220,7 @@
             width: 22px; height: 22px; background: #fff; border-radius: 50%;
             transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
-        [data-theme="dark"] .theme-toggle { background: #6b21a8; }
+        [data-theme="dark"] .theme-toggle { background: var(--accent-700); }
         [data-theme="dark"] .theme-toggle::after { transform: translateX(24px); }
 
         /* ========== 粒子画布 ========== */
@@ -225,14 +233,14 @@
         #back-to-top {
             position: fixed; bottom: 30px; right: 30px; z-index: 100;
             width: 48px; height: 48px; border-radius: 50%;
-            background: #ec4899; color: #fff; border: none; cursor: pointer;
-            box-shadow: 0 4px 16px rgba(236,72,153,0.4);
+            background: var(--accent-500); color: #fff; border: none; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.4);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transform: translateY(20px);
             transition: all 0.3s ease; pointer-events: none;
         }
         #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        #back-to-top:hover { background: #db2777; transform: translateY(-4px); }
+        #back-to-top:hover { background: var(--accent-600); transform: translateY(-4px); }
         #back-to-top .btp-ring {
             position: absolute; inset: 0; width: 100%; height: 100%;
             transform: rotate(-90deg); pointer-events: none;
@@ -313,7 +321,7 @@
             position:fixed;pointer-events:none;z-index:9999;
             width:400px;height:400px;
             border-radius:50%;
-            background:radial-gradient(circle,rgba(236,72,153,0.12) 0%,rgba(236,72,153,0.05) 35%,transparent 70%);
+            background:radial-gradient(circle,rgba(var(--accent-rgb),0.12) 0%,rgba(var(--accent-rgb),0.05) 35%,transparent 70%);
             transform:translate(-50%,-50%);
             transition:opacity 0.3s;
         }
@@ -334,7 +342,7 @@
         .dot-nav-item:hover { border-color:var(--accent-300,#f9a8d4);transform:scale(1.3); }
         .dot-nav-item.active {
             background:var(--accent-500,#ec4899);border-color:var(--accent-500,#ec4899);
-            box-shadow:0 0 12px rgba(236,72,153,0.5);width:12px;height:12px;
+            box-shadow:0 0 12px rgba(var(--accent-rgb),0.5);width:12px;height:12px;
         }
         .dot-nav-item .dot-tooltip {
             position:absolute;right:20px;top:50%;transform:translateY(-50%);
@@ -365,13 +373,14 @@
             width:48px;height:48px;border-radius:50%;
             background:linear-gradient(135deg,var(--accent-500,#ec4899),var(--accent-600,#db2777));
             color:#fff;border:none;cursor:pointer;
-            box-shadow:0 4px 20px rgba(236,72,153,0.4);
+            box-shadow:0 4px 20px rgba(var(--accent-rgb),0.4);
             display:flex;align-items:center;justify-content:center;
             font-size:20px;transition:all 0.3s ease;
             z-index:2;
         }
-        .fab-toggle:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(236,72,153,0.5); }
-        .fab-toggle.open { transform:rotate(45deg); }
+        .fab-toggle:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(var(--accent-rgb),0.5); }
+        .fab-toggle.open { transform:scale(1.06); }
+        .fab-toggle i { transition:transform 0.3s ease; }
         .fab-item {
             position:relative; /* 修正 fab-tip 工具提示的定位基准 */
             width:40px;height:40px;border-radius:50%;
@@ -402,7 +411,7 @@
             background: linear-gradient(135deg, var(--accent-400,#f472b6), var(--accent-600,#db2777));
             border: none; cursor: pointer; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(236,72,153,0.45);
+            box-shadow: 0 6px 20px rgba(var(--accent-rgb),0.45);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -488,7 +497,7 @@
             width: 42px; height: 42px; font-size: 16px;
             background: linear-gradient(135deg,var(--accent-500,#ec4899),var(--accent-600,#db2777));
             color: #fff; border: none;
-            box-shadow: 0 4px 16px rgba(236,72,153,0.35);
+            box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.35);
         }
         .mmp-btn.mmp-close { width: 26px; height: 26px; font-size: 11px; background: transparent; border: none; }
         #mmp-playlist {
@@ -502,9 +511,9 @@
             padding: 7px 8px; border-radius: 10px; font-size: 12px; color: var(--text);
             transition: background 0.15s ease; font-family: inherit;
         }
-        .mmp-station:hover { background: rgba(236,72,153,0.1); }
+        .mmp-station:hover { background: rgba(var(--accent-rgb),0.1); }
         .mmp-station.active {
-            background: rgba(236,72,153,0.16);
+            background: rgba(var(--accent-rgb),0.16);
             color: var(--accent-500,#ec4899); font-weight: 600;
         }
         .mmp-station .mmp-st-tags { color: var(--text-secondary); font-size: 11px; font-weight: 400; }
@@ -568,9 +577,17 @@
         /* 可视化画布 */
         #visualizer-main {
             width:100%;height:90px;border-radius:16px;display:block;
-            background:rgba(0,0,0,0.03);
+            background:linear-gradient(180deg,
+                rgba(var(--accent-rgb),0.09) 0%,
+                rgba(var(--accent-rgb),0.03) 65%,
+                rgba(var(--accent-rgb),0.07) 100%);
         }
-        [data-theme="dark"] #visualizer-main { background:rgba(255,255,255,0.03); }
+        [data-theme="dark"] #visualizer-main {
+            background:linear-gradient(180deg,
+                rgba(var(--accent-rgb),0.12) 0%,
+                rgba(var(--accent-rgb),0.05) 65%,
+                rgba(var(--accent-rgb),0.09) 100%);
+        }
         @media (min-width:640px) { #visualizer-main { height:120px; } }
 
         /* 碟片+控制横排 */
@@ -700,7 +717,7 @@
             box-shadow:
                 0 0 0 1px rgba(255,255,255,0.02),
                 0 12px 48px rgba(0,0,0,0.45),
-                0 0 80px rgba(236,72,153,0.4),
+                0 0 80px rgba(var(--accent-rgb),0.4),
                 inset 0 1px 1px rgba(255,255,255,0.01);
         }
 
@@ -720,15 +737,16 @@
             position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
             width:14%;height:14%;border-radius:50%;z-index:5;
             display:flex;align-items:center;justify-content:center;
-            font-size:7px;font-weight:800;color:#fff;text-align:center;
+            font-size:10px;font-weight:800;color:#fff;text-align:center;
             pointer-events:none;line-height:1.15;overflow:hidden;
             text-shadow:0 1px 2px rgba(0,0,0,0.4);
             letter-spacing:0.5px;
             background:radial-gradient(circle at 40% 35%,
                 rgba(255,255,255,0.15) 0%,
                 transparent 50%);
+            box-shadow:inset 0 0 0 2px rgba(255,255,255,0.25);
         }
-        @media (min-width:640px) { .vinyl-label { font-size:9px;width:13%;height:13%; } }
+        @media (min-width:640px) { .vinyl-label { font-size:10px;width:13%;height:13%; } }
 
         /* ====== 唱臂 ====== */
         .tonearm {
@@ -739,11 +757,31 @@
             transform:rotate(10deg);
             box-shadow:
                 0 3px 8px rgba(0,0,0,0.45),
-                0 1px 2px rgba(255,255,255,0.15);
+                0 1px 2px rgba(255,255,255,0.15),
+                0 8px 20px rgba(0,0,0,0.25);
             transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
         }
-        /* 播放中：唱臂落下到音轨 */
-        .tonearm.playing { transform:rotate(-20deg); }
+        /* 播放中：唱臂落下到音轨（加深落针角度） */
+        .tonearm.playing { transform:rotate(-24deg); }
+
+        /* 圆形轴座（唱臂根部） */
+        .tonearm-pivot {
+            position:absolute;right:-9px;top:50%;transform:translateY(-50%);
+            width:26px;height:26px;border-radius:50%;
+            background:radial-gradient(circle at 55% 40%,#f0f0f0,#c8c8c8 40%,#909090 100%);
+            border:1px solid #a8a8a8;
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.4),
+                inset 0 1px 2px rgba(255,255,255,0.4);
+            z-index:8;
+        }
+        .tonearm-pivot::after {
+            content:'';position:absolute;inset:0;top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            width:6px;height:6px;border-radius:50%;
+            background:linear-gradient(180deg,#888,#555);
+            box-shadow:0 0 2px rgba(0,0,0,0.5);
+        }
 
         /* 唱头壳 (cartridge) */
         .tonearm::after {
@@ -766,7 +804,7 @@
             transition:all 0.3s;
         }
         .tonearm.playing .needle {
-            box-shadow:0 0 3px rgba(236,72,153,0.5);
+            box-shadow:0 0 3px rgba(var(--accent-rgb),0.5);
         }
 
         /* 配重锤 (counterweight) */
@@ -778,11 +816,13 @@
             box-shadow:
                 0 3px 8px rgba(0,0,0,0.45),
                 inset 0 1px 2px rgba(255,255,255,0.3);
+            z-index:9;
         }
 
         @media (max-width:639px) {
             .tonearm { width:75px;height:6px;top:4px;right:-8px; }
-            .tonearm.playing { transform:rotate(-18deg); }
+            .tonearm.playing { transform:rotate(-21deg); }
+            .tonearm-pivot { width:20px;height:20px;right:-7px; }
             .tonearm::before { width:16px;height:16px;border-width:2px;top:-10px;right:-3px; }
             .tonearm::after { left:-12px;top:-7px;width:14px;height:18px; }
             .tonearm .needle { left:-14px;top:9px;height:5px; }
@@ -793,16 +833,17 @@
             width:50px;height:50px;border-radius:50%;border:none;
             background:var(--tag-bg);color:var(--text-secondary);
             cursor:pointer;display:flex;align-items:center;justify-content:center;
-            font-size:19px;transition:all 0.25s ease;
+            font-size:17px;transition:all 0.25s ease;
             border:1px solid var(--glass-border);
+            box-shadow:0 2px 10px rgba(var(--accent-rgb),0.08);
         }
-        .music-btn:hover { color:var(--accent-500,#ec4899);border-color:var(--accent-300,#f9a8d4);transform:scale(1.08); }
+        .music-btn:hover { color:var(--accent-500,#ec4899);border-color:var(--accent-300,#f9a8d4);transform:scale(1.08);background:rgba(var(--accent-rgb),0.1); }
         .music-btn.play-main {
             width:72px;height:72px;font-size:28px;
             background:linear-gradient(135deg,var(--accent-500,#ec4899),var(--accent-600,#db2777));
-            color:#fff;border:none;box-shadow:0 4px 20px rgba(236,72,153,0.35);
+            color:#fff;border:none;box-shadow:0 4px 20px rgba(var(--accent-rgb),0.35);
         }
-        .music-btn.play-main:hover { transform:scale(1.12);box-shadow:0 8px 32px rgba(236,72,153,0.5); }
+        .music-btn.play-main:hover { transform:scale(1.12);box-shadow:0 8px 32px rgba(var(--accent-rgb),0.5); }
         @media (max-width:639px) {
             .music-btn { width:44px;height:44px;font-size:16px; }
             .music-btn.play-main { width:58px;height:58px;font-size:22px; }
@@ -813,7 +854,18 @@
             font-weight:800;font-size:21px;color:var(--text);
             white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
             letter-spacing:-0.5px;
+            flex:1;min-width:0;
         }
+        /* LIVE 直播徽章（播放中显示） */
+        .live-badge {
+            display:none;align-items:center;flex-shrink:0;
+            background:#ef4444;color:#fff;
+            font-size:10px;font-weight:800;letter-spacing:1px;
+            padding:4px 8px;border-radius:999px;line-height:1;
+            box-shadow:0 2px 8px rgba(239,68,68,0.4);
+            animation:pulseSoft 1.6s ease-in-out infinite;
+        }
+        .live-badge.on { display:inline-flex; }
         .music-artist {
             font-size:14px;color:var(--text-secondary);
             white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -876,7 +928,7 @@
         /* ========== 阅读进度条 ========== */
         #reading-progress {
             position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
-            background: linear-gradient(90deg, #f472b6, #ec4899, #db2777);
+            background: linear-gradient(90deg, var(--accent-400), var(--accent-500), var(--accent-600));
             width: 0%; transition: width 0.1s linear;
             border-radius: 0 3px 3px 0;
         }
@@ -892,12 +944,12 @@
         .toast-success { background: rgba(16,185,129,0.9); }
         .toast-info { background: rgba(59,130,246,0.9); }
         .toast-warning { background: rgba(245,158,11,0.9); }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+        /* toastIn 的入场关键帧在下方「lrht 风格」段落统一定义（弹性版） */
         @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-20px); } }
 
         /* ========== 照片画廊 Lightbox ========== */
         .gallery-img { transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; }
-        .gallery-img:hover { transform: scale(1.03); box-shadow: 0 12px 32px rgba(236,72,153,0.3); }
+        .gallery-img:hover { transform: scale(1.03); box-shadow: 0 12px 32px rgba(var(--accent-rgb),0.3); }
         #gallery-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -920,16 +972,16 @@
         #lightbox img { max-width: 90vw; max-height: 85vh; border-radius: 16px; transform: scale(0.9); transition: transform 0.3s ease; }
         #lightbox.active img { transform: scale(1); }
         #lightbox-close { position: absolute; top: 24px; right: 24px; color: #fff; font-size: 32px; cursor: pointer; z-index: 1; }
-        #lightbox-close:hover { color: #f472b6; }
+        #lightbox-close:hover { color: var(--accent-400); }
 
         /* ========== 贡献热力图 ========== */
         .heat-cell { width: 13px; height: 13px; border-radius: 2px; transition: all 0.2s ease; }
         .heat-cell:hover { transform: scale(1.4); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .heat-l0 { background: #ebedf0; } [data-theme="dark"] .heat-l0 { background: #2d2438; }
-        .heat-l1 { background: #fce7f3; } [data-theme="dark"] .heat-l1 { background: #4a1942; }
-        .heat-l2 { background: #f9a8d4; } [data-theme="dark"] .heat-l2 { background: #7b2d6e; }
-        .heat-l3 { background: #f472b6; } [data-theme="dark"] .heat-l3 { background: #a8418f; }
-        .heat-l4 { background: #db2777; } [data-theme="dark"] .heat-l4 { background: #d456a8; }
+        .heat-l1 { background: var(--accent-100); } [data-theme="dark"] .heat-l1 { background: #4a1942; }
+        .heat-l2 { background: var(--accent-300); } [data-theme="dark"] .heat-l2 { background: #7b2d6e; }
+        .heat-l3 { background: var(--accent-400); } [data-theme="dark"] .heat-l3 { background: #a8418f; }
+        .heat-l4 { background: var(--accent-600); } [data-theme="dark"] .heat-l4 { background: #d456a8; }
 
         /* ========== 标签云 ========== */
         .tag-cloud-item {
@@ -939,7 +991,7 @@
             background: var(--tag-bg); color: var(--text-secondary);
             border: 1px solid var(--glass-border);
         }
-        .tag-cloud-item:hover { color: #ec4899; border-color: #f9a8d4; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(236,72,153,0.2); }
+        .tag-cloud-item:hover { color: var(--accent-500); border-color: var(--accent-300); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(var(--accent-rgb),0.2); }
 
         /* ========== 友情链接 ========== */
         .friend-link-card {
@@ -947,7 +999,7 @@
             border-radius: 16px; transition: all 0.3s ease; text-decoration: none;
             background: var(--tag-bg); border: 1px solid var(--glass-border); color: var(--text);
         }
-        .friend-link-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(236,72,153,0.15); border-color: #f9a8d4; }
+        .friend-link-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(var(--accent-rgb),0.15); border-color: var(--accent-300); }
         .friend-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 18px; flex-shrink: 0; overflow: hidden; }
         .friend-avatar img {
             width: 100%; height: 100%; border-radius: 50%;
@@ -956,26 +1008,57 @@
         }
 
         /* ========== 通用交互细节 ========== */
-        ::selection { background:#f9a8d4; color:#fff; }
-        [data-theme="dark"] ::selection { background:#be185d; }
-        :focus-visible { outline:2px solid #ec4899; outline-offset:2px; border-radius:4px; }
+        ::selection { background:var(--accent-300); color:#fff; }
+        [data-theme="dark"] ::selection { background:var(--accent-700); }
+        :focus-visible { outline:2px solid var(--accent-500); outline-offset:2px; border-radius:4px; }
         .skip-link {
             position:fixed; left:-9999px; top:12px; z-index:10002;
-            background:#ec4899; color:#fff; padding:10px 16px; border-radius:10px;
+            background:var(--accent-500); color:#fff; padding:10px 16px; border-radius:10px;
             font-size:14px; font-weight:600; text-decoration:none;
         }
         .skip-link:focus { left:12px; }
 
-        /* ========== 音量滑块美化 ========== */
-        #music-volume::-webkit-slider-thumb {
-            -webkit-appearance:none; appearance:none;
-            width:16px; height:16px; border-radius:50%;
-            background:var(--accent-500,#ec4899); cursor:pointer;
-            box-shadow:0 2px 6px rgba(0,0,0,0.2);
+        /* ========== 音量行：图标底座 + 玻璃胶囊轨道 ========== */
+        .vol-icon {
+            display:flex;align-items:center;justify-content:center;
+            width:40px;height:40px;border-radius:50%;flex-shrink:0;
+            background:var(--tag-bg);border:1px solid var(--glass-border);
+            color:var(--text-secondary);font-size:15px;
+            transition:color 0.2s ease,border-color 0.2s ease,transform 0.2s ease;
         }
-        #music-volume::-moz-range-thumb {
-            width:16px; height:16px; border:none; border-radius:50%;
-            background:var(--accent-500,#ec4899); cursor:pointer;
+        .vol-icon:hover {
+            color:var(--accent-500);border-color:var(--accent-300);
+            transform:scale(1.08);
+        }
+        .vol-slider {
+            -webkit-appearance:none;appearance:none;
+            width:180px;height:26px;cursor:pointer;
+            background:transparent;outline:none;
+        }
+        .vol-slider::-webkit-slider-runnable-track {
+            height:8px;border-radius:4px;
+            background:var(--skill-track);
+            border:1px solid var(--glass-border);
+            box-shadow:inset 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .vol-slider::-webkit-slider-thumb {
+            -webkit-appearance:none;appearance:none;
+            width:16px;height:16px;border-radius:50%;
+            background:var(--accent-500);cursor:pointer;
+            margin-top:-5.5px;
+            box-shadow:0 2px 8px rgba(var(--accent-rgb),0.45);
+            transition:transform 0.15s ease;
+        }
+        .vol-slider::-webkit-slider-thumb:hover { transform:scale(1.15); }
+        .vol-slider::-moz-range-track {
+            height:8px;border-radius:4px;
+            background:var(--skill-track);
+            border:1px solid var(--glass-border);
+        }
+        .vol-slider::-moz-range-thumb {
+            width:16px;height:16px;border:none;border-radius:50%;
+            background:var(--accent-500);cursor:pointer;
+            box-shadow:0 2px 8px rgba(var(--accent-rgb),0.45);
         }
 
         /* ========== Lightbox 前后切换 ========== */
@@ -985,7 +1068,7 @@
             background:rgba(255,255,255,0.12); color:#fff; font-size:30px; line-height:1;
             transition:background 0.2s ease, transform 0.2s ease; z-index:2;
         }
-        #lightbox-prev:hover, #lightbox-next:hover { background:rgba(236,72,153,0.55); }
+        #lightbox-prev:hover, #lightbox-next:hover { background:rgba(var(--accent-rgb),0.55); }
         #lightbox-prev:active, #lightbox-next:active { transform:translateY(-50%) scale(0.92); }
         #lightbox-prev { left:16px; } #lightbox-next { right:16px; }
         #lightbox-counter {
@@ -1037,7 +1120,7 @@
             color:var(--text); font-size:14px; text-align:left;
             background:transparent; border:none; font-family:inherit;
         }
-        .cmd-item:hover, .cmd-item.selected { background:rgba(236,72,153,0.12); }
+        .cmd-item:hover, .cmd-item.selected { background:rgba(var(--accent-rgb),0.12); }
         .cmd-item .cmd-item-icon { width:28px; text-align:center; font-size:16px; flex-shrink:0; }
         .cmd-item .cmd-item-title { flex:1; font-weight:500; }
         .cmd-item .cmd-item-hint { font-size:12px; color:var(--text-secondary); }
@@ -1075,9 +1158,9 @@
             z-index: 89; cursor: pointer; user-select: none;
             display: flex; align-items: center; gap: 8px;
             padding: 8px 18px; border-radius: 999px;
-            background: linear-gradient(135deg, #f472b6, #ec4899 55%, #db2777);
+            background: linear-gradient(135deg, var(--accent-400), var(--accent-500) 55%, var(--accent-600));
             color: #fff; font-size: 14px; font-weight: 700;
-            box-shadow: 0 8px 28px rgba(236,72,153,0.45);
+            box-shadow: 0 8px 28px rgba(var(--accent-rgb),0.45);
             animation: bounceIn 0.7s cubic-bezier(0.34,1.56,0.64,1);
         }
         #festival-banner .fb-close {
@@ -1088,7 +1171,8 @@
         @media (max-width: 640px) { #festival-banner { top: 64px; font-size: 12px; padding: 7px 14px; } }
 
         /* ========== 留言点赞/置顶状态 ========== */
-        .gb-like.liked, .gb-pin.pinned { color: #ec4899; font-weight: 600; }
+        .gb-like.liked, .gb-pin.pinned { color: var(--accent-500); font-weight: 600; }
+        .gb-like:not(.liked):hover, .gb-pin:not(.pinned):hover { color: var(--accent-500); }
 
         /* ========== 动效总开关 ========== */
         .fx-off .animate-blob { animation: none !important; }
@@ -1110,8 +1194,8 @@
         }
         /* 导航链接 pill 悬停 */
         .nav-link { padding: 6px 12px; border-radius: 8px; transition: color 0.3s, background 0.3s; }
-        .nav-link:hover { background: rgba(236,72,153,0.08); }
-        [data-theme="dark"] .nav-link:hover { background: rgba(236,72,153,0.16); }
+        .nav-link:hover { background: rgba(var(--accent-rgb),0.08); }
+        [data-theme="dark"] .nav-link:hover { background: rgba(var(--accent-rgb),0.16); }
         /* 标签云描边 pill 风格 */
         .tag-cloud-item {
             background: transparent; border: 1.5px solid var(--glass-border);
@@ -1145,7 +1229,7 @@
         .project-card .project-img-placeholder { position: relative; }
         .project-card .project-img-placeholder::after {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(236,72,153,0.14), transparent 65%);
+            background: linear-gradient(135deg, rgba(var(--accent-rgb),0.14), transparent 65%);
             opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
         }
         .project-card:hover .project-img-placeholder::after { opacity: 1; }
@@ -1159,7 +1243,7 @@
         #back-to-top:active, #music-orb:active, .dot-nav-item:active,
         .theme-toggle:active { transform: scale(0.92); }
         .fab-toggle:active { transform: scale(0.9); }
-        .fab-toggle.open:active { transform: rotate(45deg) scale(0.9); }
+        .fab-toggle.open:active { transform: scale(0.9); }
         /* 渐变主按钮按压反馈 */
         a.bg-gradient-to-r:active, button.bg-gradient-to-r:active { transform: scale(0.95); }
         /* 照片懒加载骨架屏（lrht shimmer 风格） */
@@ -1178,6 +1262,93 @@
                 transition-duration: 0.01ms !important;
             }
         }
+
+        /* ========== 主题色工具类（跟随 --accent-* 变量） ========== */
+        .accent-gradient-text {
+            background: linear-gradient(90deg, var(--accent-500), var(--accent-700));
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent; -webkit-text-fill-color: transparent;
+        }
+        /* 流光渐变文字（Hero 标题用） */
+        .accent-gradient-anim {
+            background: linear-gradient(90deg, var(--accent-400), var(--accent-600), var(--accent-400));
+            background-size: 200% 100%;
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent; -webkit-text-fill-color: transparent;
+            animation: gradientBar 4s ease infinite;
+        }
+        /* 主题色渐变主按钮 */
+        .btn-accent {
+            background: linear-gradient(90deg, var(--accent-500), var(--accent-600));
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(var(--accent-rgb),0.35);
+        }
+        .btn-accent:hover { box-shadow: 0 12px 28px rgba(var(--accent-rgb),0.5); }
+        /* 主题色小标签（项目 tags 等） */
+        .tag-accent {
+            background: var(--accent-50); color: var(--accent-600);
+        }
+        [data-theme="dark"] .tag-accent {
+            background: rgba(var(--accent-rgb),0.14); color: var(--accent-300);
+        }
+        /* 主题色胶囊（徽章/日期等） */
+        .pill-accent {
+            background: rgba(var(--accent-rgb),0.08);
+            color: var(--accent-600);
+            border: 1px solid rgba(var(--accent-rgb),0.18);
+        }
+        [data-theme="dark"] .pill-accent { color: var(--accent-300); }
+
+        /* ========== Hero 区 ========== */
+        /* 英雄区容器保持透明无背景，与主内容区融为一体 */
+        /* 装饰光斑 */
+        .hero-deco {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            filter: blur(60px); z-index: 0;
+            transition: transform 0.2s ease-out;
+        }
+        /* 浮动小符号（外层负责鼠标视差，内层负责上下浮动动画） */
+        .hero-float-wrap {
+            position: absolute; pointer-events: none; z-index: 0;
+            transition: transform 0.2s ease-out;
+        }
+        .hero-float {
+            display: inline-block; font-size: 24px; opacity: 0.6;
+            color: var(--accent-400);
+            filter: drop-shadow(0 0 10px rgba(var(--accent-rgb),0.35));
+            animation: float 6s ease-in-out infinite;
+        }
+        @media (max-width: 640px) { .hero-float-wrap { display: none; } }
+        /* 向下滚动指示 */
+        .hero-scroll-hint {
+            position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+            color: var(--text-secondary); font-size: 20px; opacity: 0.7;
+            animation: heroHintBounce 2s ease-in-out infinite;
+            text-decoration: none; z-index: 1;
+        }
+        .hero-scroll-hint:hover { opacity: 1; color: var(--accent-500); }
+        @keyframes heroHintBounce {
+            0%,100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 8px); }
+        }
+        .fx-off .hero-float { animation: none; }
+
+        /* ========== 季节飘落特效（樱花/雪花） ========== */
+        #season-fx-layer {
+            position: fixed; inset: 0; z-index: 30;
+            pointer-events: none; overflow: hidden;
+        }
+        .season-petal {
+            position: absolute; top: -48px; left: 0;
+            will-change: transform; pointer-events: none;
+            animation: seasonFall linear forwards;
+        }
+        @keyframes seasonFall {
+            0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+            8%   { opacity: var(--petal-opacity, 0.9); }
+            100% { transform: translate3d(var(--sway, 40px), 110vh, 0) rotate(var(--spin, 540deg)); opacity: 0.15; }
+        }
+        .fx-off #season-fx-layer { display: none; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -1192,7 +1363,7 @@
     <div id="page-loader">
         <div class="text-center space-y-4">
             <div class="loader-spinner mx-auto"></div>
-            <p class="text-sm text-brand-500 font-medium">赛博飞升中...</p>
+            <p class="text-sm font-medium" style="color:var(--accent-500);">赛博飞升中...</p>
         </div>
     </div>
 
@@ -1221,7 +1392,7 @@
     </div>
 
     <!-- ==================== 音效开关 ==================== -->
-    <button id="sound-toggle" title="音效开关" aria-label="音效开关">🔊</button>
+    <button id="sound-toggle" title="音效开关" aria-label="音效开关"><i class="fa-solid fa-volume-high"></i></button>
 
     <!-- ==================== 动态 blob 背景 ==================== -->
     <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -1233,7 +1404,7 @@
     <!-- ==================== 导航栏 ==================== -->
     <nav class="nav-glass sticky top-0 z-50 px-4 py-3">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <a href="#hero" class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-700">
+            <a href="#hero" class="text-xl font-extrabold accent-gradient-text">
                 Tachy
             </a>
 
@@ -1274,52 +1445,70 @@
     <main id="main" class="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-16 sm:space-y-24">
 
         <!-- ========== Hero 英雄区 ========== -->
-        <section id="hero" class="min-h-[85vh] flex items-center justify-center">
-            <div class="text-center space-y-6 max-w-2xl">
-                <!-- 在线状态 -->
-                <div class="flex justify-center opacity-0 animate-fade-in-up">
-                    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50/70 backdrop-blur border border-green-200 rounded-full text-xs font-medium text-green-600">
-                        <span class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+        <section id="hero" class="min-h-[85vh] flex items-center justify-center relative">
+            <div class="relative w-full px-5 py-14 sm:px-14 sm:py-16 opacity-0 animate-fade-in-up">
+                <!-- 装饰光斑（鼠标视差） -->
+                <div class="hero-deco" data-depth="26" style="top:-70px;left:-50px;width:240px;height:240px;background:var(--accent-200);opacity:0.55;"></div>
+                <div class="hero-deco" data-depth="38" style="bottom:-80px;right:-60px;width:280px;height:280px;background:var(--accent-300);opacity:0.35;"></div>
+                <!-- 浮动小符号（鼠标视差，移动端隐藏） -->
+                <span class="hero-float-wrap" data-depth="16" style="top:16%;left:9%;"><span class="hero-float" style="animation-delay:0s;"><i class="fa-solid fa-keyboard"></i></span></span>
+                <span class="hero-float-wrap" data-depth="24" style="top:26%;right:11%;"><span class="hero-float" style="animation-delay:1.2s;"><i class="fa-solid fa-rocket"></i></span></span>
+                <span class="hero-float-wrap" data-depth="12" style="bottom:22%;left:14%;"><span class="hero-float" style="animation-delay:2.1s;"><i class="fa-solid fa-wand-magic-sparkles"></i></span></span>
+                <span class="hero-float-wrap" data-depth="20" style="bottom:16%;right:16%;"><span class="hero-float" style="animation-delay:0.6s;"><i class="fa-solid fa-floppy-disk"></i></span></span>
+
+                <div class="text-center space-y-6 max-w-2xl mx-auto relative" style="z-index:1;">
+                    <!-- 在线状态 -->
+                    <div class="flex justify-center opacity-0 animate-fade-in-up">
+                        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50/70 backdrop-blur border border-green-200 rounded-full text-xs font-medium text-green-600">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                            </span>
+                            在线中 — 欢迎来撩
                         </span>
-                        在线中 — 欢迎来撩
-                    </span>
-                </div>
-
-                <!-- 头像 -->
-                <div class="relative mx-auto w-28 h-28 sm:w-36 sm:h-36 opacity-0 animate-bounce-in">
-                    <div class="absolute inset-0 bg-brand-400/30 rounded-full blur-2xl animate-pulse-soft"></div>
-                    <img src="https://shared.akamai.steamstatic.com/community_assets/images/items/3339420/7a0d59fffd2f452ad847616d534ea91c814c38c4.gif"
-                         alt="Avatar" class="relative w-full h-full object-cover rounded-full border-4 border-white/90 shadow-xl animate-float" style="animation-duration: 9s;" />
-                </div>
-
-                <div class="space-y-3 opacity-0 animate-fade-in-up" style="animation-delay:0.2s;">
-                    <div class="inline-block px-4 py-1.5 bg-brand-100/70 backdrop-blur text-brand-600 rounded-full text-xs font-bold tracking-widest uppercase">
-                        赛博老登 · 科技飞升
                     </div>
-                    <h1 class="text-4xl sm:text-6xl font-black tracking-tight" style="color:var(--text);">
-                        你好，我是 <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-700">Tachy</span>
-                    </h1>
-                    <p class="text-base sm:text-lg max-w-md mx-auto leading-relaxed" style="color:var(--text-secondary);">
-                        <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
-                    </p>
+
+                    <!-- 头像 -->
+                    <div class="relative mx-auto w-28 h-28 sm:w-36 sm:h-36 opacity-0 animate-bounce-in">
+                        <div class="absolute inset-0 rounded-full blur-2xl animate-pulse-soft" style="background:rgba(var(--accent-rgb),0.3);"></div>
+                        <img src="https://shared.akamai.steamstatic.com/community_assets/images/items/3339420/7a0d59fffd2f452ad847616d534ea91c814c38c4.gif"
+                             alt="Avatar" class="relative w-full h-full object-cover rounded-full border-4 border-white/90 shadow-xl animate-float" style="animation-duration: 9s;" />
+                    </div>
+
+                    <div class="space-y-3 opacity-0 animate-fade-in-up" style="animation-delay:0.2s;">
+                        <div class="inline-block px-4 py-1.5 pill-accent backdrop-blur rounded-full text-xs font-bold tracking-widest uppercase">
+                            赛博老登 · 科技飞升
+                        </div>
+                        <h1 class="text-4xl sm:text-6xl font-black tracking-tight" style="color:var(--text);">
+                            你好，我是 <span class="accent-gradient-anim">Tachy</span>
+                        </h1>
+                        <p class="text-base sm:text-lg max-w-md mx-auto leading-relaxed" style="color:var(--text-secondary);">
+                            <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
+                        </p>
+                    </div>
+
+                    <!-- 一言 -->
+                    <div class="opacity-0 animate-fade-in-up" style="animation-delay:0.35s;">
+                        <p class="text-sm italic text-gray-400" id="daily-quote">加载中...</p>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="flex justify-center gap-4 opacity-0 animate-fade-in-up" style="animation-delay:0.5s;">
+                        <a href="#contact" class="btn-accent px-6 py-3 font-semibold rounded-xl hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                            联系我
+                        </a>
+                        <a href="#about" class="px-6 py-3 glass-card rounded-xl font-medium transition-all duration-300 text-sm" style="color:var(--text);">
+                            了解更多 ↓
+                        </a>
+                    </div>
                 </div>
 
-                <!-- 一言 -->
-                <div class="opacity-0 animate-fade-in-up" style="animation-delay:0.35s;">
-                    <p class="text-sm italic text-gray-400" id="daily-quote">加载中...</p>
-                </div>
-
-                <!-- CTA -->
-                <div class="flex justify-center gap-4 opacity-0 animate-fade-in-up" style="animation-delay:0.5s;">
-                    <a href="#contact" class="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-0.5 transition-all duration-300 text-sm">
-                        联系我
-                    </a>
-                    <a href="#about" class="px-6 py-3 glass-card rounded-xl font-medium transition-all duration-300 text-sm" style="color:var(--text);">
-                        了解更多 ↓
-                    </a>
-                </div>
+                <!-- 向下滚动指示 -->
+                <a href="#about" class="hero-scroll-hint" aria-label="向下滚动">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </a>
             </div>
         </section>
 
@@ -1329,7 +1518,7 @@
                 <!-- 左侧 -->
                 <div class="md:col-span-3 glass-card rounded-3xl p-6 sm:p-8 opacity-0 animate-fade-in-up space-y-5">
                     <div class="flex items-center gap-3">
-                        <div class="bg-brand-100 p-2.5 rounded-2xl text-brand-500">
+                        <div class="p-2.5 rounded-2xl" style="background:rgba(var(--accent-rgb),0.1);color:var(--accent-500);">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
                             </svg>
@@ -1342,11 +1531,11 @@
                         本人与赌毒不共戴天，热爱和平、写 Bug、改 Bug、以及和 Bug 和平共处。
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 bg-white/80 border border-brand-100 text-brand-500 rounded-lg text-xs font-medium shadow-sm">#纯牛逼</span>
-                        <span class="px-3 py-1 bg-white/80 border border-brand-100 text-brand-500 rounded-lg text-xs font-medium shadow-sm">#纯压抑</span>
-                        <span class="px-3 py-1 bg-white/80 border border-brand-100 text-brand-500 rounded-lg text-xs font-medium shadow-sm">#黏人</span>
-                        <span class="px-3 py-1 bg-white/80 border border-brand-100 text-brand-500 rounded-lg text-xs font-medium shadow-sm">#男女通吃</span>
-                        <span class="px-3 py-1 bg-white/80 border border-brand-100 text-brand-500 rounded-lg text-xs font-medium shadow-sm">#赛博飞升</span>
+                        <span class="pill-accent px-3 py-1 rounded-lg text-xs font-medium shadow-sm backdrop-blur">#纯牛逼</span>
+                        <span class="pill-accent px-3 py-1 rounded-lg text-xs font-medium shadow-sm backdrop-blur">#纯压抑</span>
+                        <span class="pill-accent px-3 py-1 rounded-lg text-xs font-medium shadow-sm backdrop-blur">#黏人</span>
+                        <span class="pill-accent px-3 py-1 rounded-lg text-xs font-medium shadow-sm backdrop-blur">#男女通吃</span>
+                        <span class="pill-accent px-3 py-1 rounded-lg text-xs font-medium shadow-sm backdrop-blur">#赛博飞升</span>
                     </div>
                 </div>
 
@@ -1354,21 +1543,21 @@
                 <div class="md:col-span-2 space-y-4">
                     <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center opacity-0 animate-fade-in-up" style="animation-delay:0.2s;">
                         <h3 class="text-5xl sm:text-6xl font-light mb-3 tabular-nums tracking-wider" id="clock-time" style="color:var(--text);">00:00:00</h3>
-                        <p class="text-sm font-medium text-brand-500 bg-brand-50/80 backdrop-blur border border-brand-100 px-4 py-1.5 rounded-full shadow-sm" id="clock-date">加载中...</p>
+                        <p class="text-sm font-medium pill-accent backdrop-blur px-4 py-1.5 rounded-full shadow-sm" id="clock-date">加载中...</p>
                         <p class="mt-4 text-xs text-gray-400" id="clock-greeting"></p>
                     </div>
                     <!-- 统计面板 -->
                     <div class="glass-card rounded-3xl p-5 opacity-0 animate-fade-in-up grid grid-cols-3 gap-3 text-center" style="animation-delay:0.3s;">
                         <div>
-                            <div class="text-2xl font-extrabold text-brand-500" id="stat-visitors">--</div>
+                            <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-visitors">--</div>
                             <div class="text-xs text-gray-400">访客</div>
                         </div>
                         <div>
-                            <div class="text-2xl font-extrabold text-brand-500" id="stat-projects">6</div>
+                            <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-projects">6</div>
                             <div class="text-xs text-gray-400">项目</div>
                         </div>
                         <div>
-                            <div class="text-2xl font-extrabold text-brand-500" id="stat-days">--</div>
+                            <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-days">--</div>
                             <div class="text-xs text-gray-400">运行天数</div>
                         </div>
                     </div>
@@ -1414,7 +1603,7 @@
         <!-- ========== 音乐播放器 ========== -->
         <section id="music-section" class="scroll-mt-20 space-y-5">
             <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">🎵 音乐盒子</h2>
+                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);"><i class="fa-solid fa-compact-disc" style="color:var(--accent-500);margin-right:10px;"></i>音乐盒子</h2>
                 <p style="color:var(--text-secondary);" class="text-sm">随机电台 · 听觉飞升</p>
             </div>
 
@@ -1429,30 +1618,34 @@
                         <div class="vinyl-disc" id="vinyl-disc">
                             <div class="vinyl-shimmer"></div>
                         </div>
-                        <div class="tonearm" id="tonearm"><span class="needle"></span></div>
+                        <div class="tonearm" id="tonearm">
+                            <span class="needle"></span>
+                            <span class="tonearm-pivot"></span>
+                        </div>
                         <div class="vinyl-label" id="vinyl-label">♪</div>
                     </div>
 
                     <!-- 右侧：信息+控制 -->
                     <div class="flex-1 flex flex-col items-center sm:items-start gap-4 sm:pr-4" style="min-width:280px;">
                         <div class="text-center sm:text-left w-full">
-                            <div class="music-title" id="music-title">点击播放随机电台</div>
+                            <div class="flex items-center justify-center sm:justify-start gap-2">
+                                <span class="live-badge" id="live-badge">● LIVE</span>
+                                <div class="music-title" id="music-title">点击播放随机电台</div>
+                            </div>
                             <div class="music-artist" id="music-artist">发现来自世界各地的音乐</div>
                         </div>
                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                            <button class="music-btn" id="music-prev" title="上一个电台">⏮</button>
-                            <button class="music-btn play-main" id="music-play" title="播放/暂停">▶</button>
-                            <button class="music-btn" id="music-next" title="下一个电台">⏭</button>
-                            <button class="music-btn" id="music-random" title="随机电台">🔀</button>
-                            <button class="music-btn" id="music-viz" title="切换可视化样式（柱状/波形/圆环）">📊</button>
-                            <button class="music-btn" id="music-sleep" title="睡眠定时：关/30/60/90 分钟">⏱</button>
+                            <button class="music-btn" id="music-prev" title="上一个电台"><i class="fa-solid fa-backward-step"></i></button>
+                            <button class="music-btn play-main" id="music-play" title="播放/暂停"><i class="fa-solid fa-play"></i></button>
+                            <button class="music-btn" id="music-next" title="下一个电台"><i class="fa-solid fa-forward-step"></i></button>
+                            <button class="music-btn" id="music-random" title="随机电台"><i class="fa-solid fa-shuffle"></i></button>
+                            <button class="music-btn" id="music-viz" title="切换可视化样式（柱状/波形/圆环）"><i class="fa-solid fa-chart-simple"></i></button>
+                            <button class="music-btn" id="music-sleep" title="睡眠定时：关/30/60/90 分钟"><i class="fa-solid fa-clock"></i></button>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span style="font-size:15px;color:var(--text-secondary);">🔊</span>
+                            <span class="vol-icon"><i class="fa-solid fa-volume-high"></i></span>
                             <input type="range" id="music-volume" min="0" max="100" value="65"
-                                   style="width:180px;height:6px;-webkit-appearance:none;appearance:none;cursor:pointer;
-                                          background:var(--skill-track);border-radius:3px;outline:none;
-                                          accent-color:var(--accent-500,#ec4899);" />
+                                   class="vol-slider" />
                         </div>
                     </div>
                 </div>
@@ -1527,7 +1720,7 @@
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-gray-400" id="gb-count">0 条留言</span>
                         <button id="gb-submit"
-                                class="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold rounded-xl shadow-lg shadow-brand-200 hover:shadow-brand-300 hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                                class="btn-accent px-5 py-2.5 font-semibold rounded-xl hover:-translate-y-0.5 transition-all duration-300 text-sm">
                             发布留言
                         </button>
                     </div>
@@ -1600,15 +1793,15 @@
     <!-- ==================== FAB 快捷菜单 ==================== -->
     <div id="fab-menu">
         <div class="fab-item" data-action="accent" style="transition-delay:0.1s;">
-            🎨<span class="fab-tip">换主题色</span>
+            <span class="fab-icon"><i class="fa-solid fa-palette"></i></span><span class="fab-tip">换主题色</span>
         </div>
         <div class="fab-item" data-action="fx" style="transition-delay:0.05s;">
-            💫<span class="fab-tip">动效开关</span>
+            <span class="fab-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><span class="fab-tip">动效开关</span>
         </div>
         <div class="fab-item" data-action="share" style="transition-delay:0s;">
-            📤<span class="fab-tip">分享本页</span>
+            <span class="fab-icon"><i class="fa-solid fa-share-nodes"></i></span><span class="fab-tip">分享本页</span>
         </div>
-        <button class="fab-toggle" id="fabToggle" aria-label="快捷菜单">⚡</button>
+        <button class="fab-toggle" id="fabToggle" aria-label="快捷菜单"><i class="fa-solid fa-bolt"></i></button>
     </div>
 
     <!-- ==================== 音乐悬浮球 + 迷你播放器 ==================== -->
@@ -1623,26 +1816,26 @@
                     <div class="mmp-title" id="mmp-title">点击播放随机电台</div>
                     <div class="mmp-artist" id="mmp-artist">发现来自世界各地的音乐</div>
                 </div>
-                <button class="mmp-btn mmp-close" id="mmp-close" aria-label="收起">✕</button>
+                <button class="mmp-btn mmp-close" id="mmp-close" aria-label="收起"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="mmp-controls">
-                <button class="mmp-btn" id="mmp-prev" aria-label="上一个电台" title="上一个电台">⏮</button>
-                <button class="mmp-btn mmp-play" id="mmp-play" aria-label="播放/暂停" title="播放/暂停">▶</button>
-                <button class="mmp-btn" id="mmp-next" aria-label="下一个电台" title="下一个电台">⏭</button>
-                <button class="mmp-btn" id="mmp-random" aria-label="随机电台" title="随机电台">🔀</button>
-                <button class="mmp-btn" id="mmp-list" aria-label="电台歌单" title="电台歌单">☰</button>
+                <button class="mmp-btn" id="mmp-prev" aria-label="上一个电台" title="上一个电台"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="mmp-btn mmp-play" id="mmp-play" aria-label="播放/暂停" title="播放/暂停"><i class="fa-solid fa-play"></i></button>
+                <button class="mmp-btn" id="mmp-next" aria-label="下一个电台" title="下一个电台"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="mmp-btn" id="mmp-random" aria-label="随机电台" title="随机电台"><i class="fa-solid fa-shuffle"></i></button>
+                <button class="mmp-btn" id="mmp-list" aria-label="电台歌单" title="电台歌单"><i class="fa-solid fa-list"></i></button>
             </div>
             <div id="mmp-playlist"></div>
         </div>
     </div>
 
     <!-- ==================== 隐藏彩蛋按钮 ==================== -->
-    <div id="easter-egg-trigger" style="position:fixed;bottom:80px;left:30px;z-index:99;width:40px;height:40px;border-radius:50%;cursor:pointer;opacity:0.15;transition:opacity 0.3s;background:#ec4899;display:flex;align-items:center;justify-content:center;font-size:18px;" title="✨ 点我试试">
-        ✨
+    <div id="easter-egg-trigger" style="position:fixed;bottom:80px;left:30px;z-index:99;width:40px;height:40px;border-radius:50%;cursor:pointer;opacity:0.15;transition:opacity 0.3s;color:#fff;background:var(--accent-500);display:flex;align-items:center;justify-content:center;font-size:16px;" title="✨ 点我试试">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
     </div>
 
     <footer class="text-center py-8 text-sm text-gray-400">
-        <p>© 2025 Tachy — 用爱发电，赛博飞升 🚀</p>
+        <p>© <span id="footer-year">2025</span> Tachy — 用爱发电，赛博飞升 🚀</p>
         <p class="mt-1 text-xs text-gray-300" id="footer-info"></p>
     </footer>
 
@@ -1686,7 +1879,7 @@
                     <tr><td>Ctrl+D / Ctrl+M</td><td>切换暗色 / 亮色模式</td></tr>
                     <tr><td>Ctrl+Shift+C</td><td>切换主题色</td></tr>
                     <tr><td>Ctrl+Shift+S</td><td>开关音效</td></tr>
-                    <tr><td>Ctrl+K 或 /</td><td>打开命令面板</td></tr>
+                    <tr><td>Ctrl+K 或 /</td><td>打开命令面板（含主题模式、季节特效等命令）</td></tr>
                     <tr><td>?</td><td>打开本帮助面板</td></tr>
                     <tr><td>Ctrl+↑</td><td>回到顶部</td></tr>
                     <tr><td>← →</td><td>照片墙预览中切换图片</td></tr>
@@ -1712,7 +1905,10 @@
         setTimeout(() => { if (loader && !loader.classList.contains('hidden')) loader.classList.add('hidden'); }, 3000);
 
         // ==========================================
-        // 1. 暗色/亮色模式
+        // 1. 暗色/亮色模式（含夜间自动暗色）
+        //    主题模式三态：auto（默认）/ light / dark
+        //    auto = NIGHT_START~NIGHT_END 时段自动暗色，其余时间跟随系统偏好
+        //    手动点击开关即固定为亮/暗；命令面板可切回自动
         // ==========================================
         const themeToggle = document.getElementById('themeToggle');
         const html = document.documentElement;
@@ -1720,26 +1916,64 @@
         // 由后续模块（音频可视化等）注册的样式刷新回调，避免变量声明顺序问题
         let onVisualRefresh = null;
 
+        const THEME_MODE_KEY = 'tachy_theme_mode';
+        const NIGHT_START = 19; // 19:00 起自动暗色
+        const NIGHT_END = 7;    // 07:00 前自动暗色
+        const darkMedia = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+        let themeMode = localStorage.getItem(THEME_MODE_KEY) || 'auto';
+
+        // 旧版本兼容：曾用手动主题的用户保留其固定选择
+        if (themeMode === 'auto' && !localStorage.getItem(THEME_MODE_KEY) && localStorage.getItem('theme')) {
+            themeMode = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+            localStorage.setItem(THEME_MODE_KEY, themeMode);
+        }
+
+        function isNightTime(now) {
+            const h = (now || new Date()).getHours();
+            return h >= NIGHT_START || h < NIGHT_END;
+        }
+        function resolveTheme() {
+            if (themeMode === 'light') return 'light';
+            if (themeMode === 'dark') return 'dark';
+            if (isNightTime()) return 'dark';
+            return (darkMedia && darkMedia.matches) ? 'dark' : 'light';
+        }
         function applyTheme(theme) {
+            if (html.getAttribute('data-theme') === theme) return;
             html.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
             const metaTheme = document.getElementById('meta-theme-color');
             if (metaTheme) metaTheme.setAttribute('content', theme === 'dark' ? '#1a1025' : '#fdf2f8');
             if (onVisualRefresh) onVisualRefresh();
         }
-        // 首次访问跟随系统偏好；用户手动切换后以 localStorage 为准
-        const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('theme') || (systemDark ? 'dark' : 'light');
-        applyTheme(savedTheme);
+        function setThemeMode(mode, silent) {
+            themeMode = mode;
+            localStorage.setItem(THEME_MODE_KEY, mode);
+            applyTheme(resolveTheme());
+            if (!silent) {
+                const names = { auto: '🕐 自动（夜间暗色，白天跟随系统）', light: '☀️ 固定亮色', dark: '🌙 固定暗色' };
+                showToast('主题模式：' + (names[mode] || mode), 'success');
+            }
+        }
+        function cycleThemeMode() {
+            const order = ['auto', 'light', 'dark'];
+            setThemeMode(order[(order.indexOf(themeMode) + 1) % order.length]);
+        }
+        applyTheme(resolveTheme());
 
         themeToggle.addEventListener('click', () => {
             const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            applyTheme(next);
+            setThemeMode(next, true); // 手动切换即固定模式
         });
         // 无障碍：支持键盘 Enter/Space 切换
         themeToggle.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); themeToggle.click(); }
         });
+        // 自动模式：每分钟检查昼夜分界；系统偏好变化时实时跟随
+        setInterval(() => { if (themeMode === 'auto') applyTheme(resolveTheme()); }, 60000);
+        if (darkMedia && darkMedia.addEventListener) {
+            darkMedia.addEventListener('change', () => { if (themeMode === 'auto') applyTheme(resolveTheme()); });
+        }
 
         // ==========================================
         // 2. 粒子背景
@@ -1747,6 +1981,8 @@
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         const particles = [];
+        // 粒子/连线颜色跟随主题色（applyAccent 切换主题色时更新）
+        let particleRGB = { r: 236, g: 72, b: 153 };
         // 移动端减半粒子数，降低 GPU/CPU 负担
         const PARTICLE_COUNT = window.innerWidth < 768 ? 28 : 60;
         let viewW = window.innerWidth;
@@ -1793,7 +2029,7 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(236,72,153,${this.opacity})`;
+                ctx.fillStyle = `rgba(${particleRGB.r},${particleRGB.g},${particleRGB.b},${this.opacity})`;
                 ctx.fill();
             }
         }
@@ -1821,7 +2057,7 @@
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(236,72,153,${linkAlpha * (1 - dist / 120)})`;
+                        ctx.strokeStyle = `rgba(${particleRGB.r},${particleRGB.g},${particleRGB.b},${linkAlpha * (1 - dist / 120)})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
@@ -1881,7 +2117,7 @@
         })();
 
         // ==========================================
-        // 5. 一言
+        // 5. 一言（在线 API + 本地兜底，点击换一条）
         // ==========================================
         const quotes = [
             '「代码如诗，Bug 如梦。」',
@@ -1896,9 +2132,45 @@
             '「Ctrl+C, Ctrl+V — 程序员的浪漫。」',
         ];
         const qEl = document.getElementById('daily-quote');
-        if (qEl) {
-            const idx = new Date().getDate() % quotes.length;
+
+        function showLocalQuote() {
+            if (!qEl) return;
+            const idx = Math.floor(Math.random() * quotes.length);
             qEl.textContent = quotes[idx];
+        }
+
+        let quoteLoading = false;
+        async function fetchQuote(userInitiated) {
+            if (!qEl || quoteLoading) return;
+            quoteLoading = true;
+            try {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 5000); // 5 秒超时兜底
+                const res = await fetch('https://v1.hitokoto.cn/', { signal: ctrl.signal });
+                clearTimeout(timer);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                if (!data || !data.hitokoto) throw new Error('empty');
+                qEl.style.opacity = '0';
+                setTimeout(() => {
+                    qEl.textContent = '「' + data.hitokoto + '」' + (data.from ? ' ——《' + data.from + '》' : '');
+                    qEl.style.opacity = '';
+                }, 150);
+            } catch (e) {
+                showLocalQuote(); // 网络失败/CORS 受限 → 本地语录兜底
+                if (userInitiated) showToast('📡 在线一言获取失败，已切换本地语录', 'warning');
+            } finally {
+                quoteLoading = false;
+            }
+        }
+
+        if (qEl) {
+            showLocalQuote();   // 先展示本地，避免空白
+            fetchQuote(false);  // 再尝试拉取在线一言
+            qEl.style.cursor = 'pointer';
+            qEl.style.transition = 'opacity 0.15s ease';
+            qEl.title = '点击换一条';
+            qEl.addEventListener('click', () => fetchQuote(true));
         }
 
         // ==========================================
@@ -1948,7 +2220,7 @@
                             <h3 class="font-bold text-sm" style="color:var(--text);">${s.name}</h3>
                             <span class="text-xs text-gray-400">${s.tag}</span>
                         </div>
-                        <span class="ml-auto text-sm font-bold text-brand-500">${s.level}%</span>
+                        <span class="ml-auto text-sm font-bold" style="color:var(--accent-500);">${s.level}%</span>
                     </div>
                     <div class="w-full rounded-full h-1.5 overflow-hidden" style="background:var(--skill-track);">
                         <div class="skill-bar-fill" data-width="${s.level}" style="width:0;"></div>
@@ -1976,11 +2248,11 @@
                 return `
                 <div class="relative flex items-center opacity-0 animate-fade-in-up" style="animation-delay:${0.1 * i}s;">
                     <!-- 圆点 -->
-                    <div class="absolute left-4 sm:left-1/2 w-4 h-4 bg-brand-500 rounded-full border-4 border-white shadow -translate-x-1/2 z-10"></div>
+                    <div class="absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border-4 border-white shadow -translate-x-1/2 z-10" style="background:var(--accent-500);"></div>
                     <!-- 内容 -->
                     <div class="ml-10 sm:ml-0 sm:w-1/2 ${isLeft ? 'sm:pr-10 sm:text-right' : 'sm:pl-10 sm:ml-auto'}">
                         <div class="glass-card rounded-2xl p-4">
-                            <span class="text-xs font-bold text-brand-500">${item.icon} ${item.date}</span>
+                            <span class="text-xs font-bold" style="color:var(--accent-500);">${item.icon} ${item.date}</span>
                             <h3 class="font-bold mt-1 text-sm" style="color:var(--text);">${item.title}</h3>
                             <p class="text-xs mt-1" style="color:var(--text-secondary);">${item.desc}</p>
                         </div>
@@ -2009,7 +2281,7 @@
                     <div class="p-5 space-y-2">
                         <h3 class="font-bold" style="color:var(--text);">${p.name}</h3>
                         <p class="text-sm" style="color:var(--text-secondary);">${p.desc}</p>
-                        <div class="flex gap-2 pt-2">${p.tags.map(t => `<span class="text-xs bg-brand-50 text-brand-600 px-2 py-1 rounded-md">${t}</span>`).join('')}</div>
+                        <div class="flex gap-2 pt-2">${p.tags.map(t => `<span class="tag-accent text-xs px-2 py-1 rounded-md">${t}</span>`).join('')}</div>
                     </div>
                 </div>
             `).join('');
@@ -2089,7 +2361,7 @@
                     const pinned = pinnedIds.includes(m.id);
                     return `
                     <div class="message-bubble glass-card rounded-2xl p-4 flex gap-3${pinned ? '' : ''}">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-brand-300 to-brand-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:linear-gradient(135deg,var(--accent-300),var(--accent-500));">
                             ${(m.nickname || '?')[0]}
                         </div>
                         <div class="flex-1 min-w-0">
@@ -2101,9 +2373,9 @@
                             </div>
                             <p class="text-sm mt-1" style="color:var(--text-secondary);">${escapeHTML(m.message)}</p>
                             <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                                <button class="text-xs px-2 py-1 rounded-md transition gb-like ${liked ? 'liked' : 'text-gray-400 hover:text-brand-500'}" data-id="${m.id}" title="点赞">👍 ${m.likes || 0}</button>
-                                <button class="text-xs px-2 py-1 rounded-md transition gb-pin ${pinned ? 'pinned' : 'text-gray-400 hover:text-brand-500'}" data-id="${m.id}" title="置顶/取消置顶">${pinned ? '📌 已置顶' : '📌 置顶'}</button>
-                                <button class="text-xs px-2 py-1 rounded-md transition text-gray-400 hover:text-red-400 gb-delete" data-index="${messages.indexOf(m)}" title="删除">🗑 删除</button>
+                                <button class="text-xs px-2 py-1 rounded-md transition gb-like ${liked ? 'liked' : 'text-gray-400'}" data-id="${m.id}" title="点赞">👍 ${m.likes || 0}</button>
+                                <button class="text-xs px-2 py-1 rounded-md transition gb-pin ${pinned ? 'pinned' : 'text-gray-400'}" data-id="${m.id}" title="置顶/取消置顶">${pinned ? '📌 已置顶' : '📌 置顶'}</button>
+                                <button class="text-xs px-2 py-1 rounded-md transition text-gray-400 hover:text-red-400 gb-delete" data-id="${m.id}" title="删除">🗑 删除</button>
                             </div>
                         </div>
                     </div>`;
@@ -2190,17 +2462,17 @@
                 renderMessages();
                 return;
             }
-            if (e.target.classList.contains('gb-delete')) {
-                const idx = parseInt(e.target.dataset.index);
-                if (!isNaN(idx) && idx >= 0 && idx < messages.length) {
+            const delBtn = e.target.closest('.gb-delete');
+            if (delBtn) {
+                // 按 id 删除，避免排序后索引错位导致删错条目
+                const idx = messages.findIndex(m => m.id === delBtn.dataset.id);
+                if (idx >= 0) {
                     const removed = messages[idx];
                     messages.splice(idx, 1);
-                    if (removed && removed.id) {
-                        pinnedIds = pinnedIds.filter(x => x !== removed.id);
-                        likedIds = likedIds.filter(x => x !== removed.id);
-                        localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
-                        localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
-                    }
+                    pinnedIds = pinnedIds.filter(x => x !== removed.id);
+                    likedIds = likedIds.filter(x => x !== removed.id);
+                    localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
+                    localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
                     saveMessages();
                     renderMessages();
                 }
@@ -2400,6 +2672,9 @@
         // ==========================================
         // 18. 页脚信息（资源全部加载完成后统计耗时）
         // ==========================================
+        const footerYear = document.getElementById('footer-year');
+        if (footerYear) footerYear.textContent = new Date().getFullYear();
+
         const footerInfo = document.getElementById('footer-info');
         const bootTime = performance.now();
         if (footerInfo) {
@@ -2941,7 +3216,7 @@
             // 重置彩蛋按钮状态
             if (eggTrigger) {
                 eggClicks = 0;
-                eggTrigger.textContent = '✨';
+                eggTrigger.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i>';
                 eggTrigger.style.opacity = '0.15';
                 eggTrigger.style.transform = 'scale(1)';
             }
@@ -2981,8 +3256,13 @@
                 const remaining = EGG_REQUIRED - eggClicks;
 
                 if (eggClicks < EGG_REQUIRED) {
-                    const msgs = ['🤔', '🧐', '🤨', '😲'];
-                    eggTrigger.textContent = msgs[eggClicks - 1] || '✨';
+                    const msgs = [
+                        '<i class="fa-solid fa-star"></i>',
+                        '<i class="fa-solid fa-heart"></i>',
+                        '<i class="fa-solid fa-bolt"></i>',
+                        '<i class="fa-solid fa-arrow-trend-up"></i>'
+                    ];
+                    eggTrigger.innerHTML = msgs[eggClicks - 1] || '<i class="fa-solid fa-wand-magic-sparkles"></i>';
                     eggTrigger.style.opacity = '0.4';
                     eggTrigger.style.transform = `scale(${1 + eggClicks * 0.15})`;
                     // 点击涟漪
@@ -3035,6 +3315,34 @@
         } else if (cursorGlow) {
             cursorGlow.classList.add('hidden-glow');
         }
+
+        // ==========================================
+        // 26.4 Hero 区鼠标视差（仅精确指针设备 + 动效开启时）
+        // ==========================================
+        (function initHeroParallax() {
+            const hero = document.getElementById('hero');
+            if (!hero || !finePointer) return;
+            const items = hero.querySelectorAll('.hero-deco, .hero-float-wrap');
+            let heroRaf = null, hx = 0, hy = 0;
+            function applyParallax() {
+                heroRaf = null;
+                items.forEach(el => {
+                    const depth = parseFloat(el.dataset.depth) || 10;
+                    el.style.transform = `translate(${(hx * depth).toFixed(1)}px, ${(hy * depth).toFixed(1)}px)`;
+                });
+            }
+            hero.addEventListener('mousemove', (e) => {
+                if (!fxEnabled) return;
+                const rect = hero.getBoundingClientRect();
+                hx = (e.clientX - rect.left) / rect.width - 0.5;
+                hy = (e.clientY - rect.top) / rect.height - 0.5;
+                if (!heroRaf) heroRaf = requestAnimationFrame(applyParallax);
+            }, { passive: true });
+            hero.addEventListener('mouseleave', () => {
+                hx = 0; hy = 0;
+                if (!heroRaf) heroRaf = requestAnimationFrame(applyParallax);
+            }, { passive: true });
+        })();
 
         // ==========================================
         // 26.5 点击涟漪特效（随动效总开关联动）
@@ -3188,7 +3496,7 @@
         if (soundToggleBtn) {
             soundToggleBtn.addEventListener('click', () => {
                 soundEnabled = !soundEnabled;
-                soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
+                soundToggleBtn.innerHTML = '<i class="fa-solid ' + (soundEnabled ? 'fa-volume-high' : 'fa-volume-xmark') + '"></i>';
                 soundToggleBtn.classList.toggle('muted', !soundEnabled);
                 if (soundEnabled) playToggle();
                 showToast(soundEnabled ? '🔊 音效已开启' : '🔇 音效已关闭', 'info');
@@ -3201,11 +3509,30 @@
         const accentThemes = ['pink', 'purple', 'blue', 'green', 'orange'];
         const accentNames = ['樱花粉', '星幻紫', '赛博蓝', '极客绿', '烈焰橙'];
 
+        function hexToRgb(hex) {
+            hex = (hex || '').trim().replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+            const n = parseInt(hex, 16);
+            if (isNaN(n) || hex.length !== 6) return null;
+            return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+        }
+
         function applyAccent(accent) {
             html.setAttribute('data-accent', accent);
             localStorage.setItem('accent', accent);
             const style = getComputedStyle(html);
             const accent500 = style.getPropertyValue('--accent-500').trim() || '#ec4899';
+            const accent200 = style.getPropertyValue('--accent-200').trim() || '#fbcfe8';
+            // 同步 RGB 分量给 CSS rgba() 与粒子画布，实现全站主题色联动
+            const rgb500 = hexToRgb(accent500);
+            const rgb200 = hexToRgb(accent200);
+            if (rgb500) {
+                html.style.setProperty('--accent-rgb', `${rgb500.r},${rgb500.g},${rgb500.b}`);
+                particleRGB = rgb500;
+            }
+            if (rgb200) {
+                html.style.setProperty('--accent-soft-rgb', `${rgb200.r},${rgb200.g},${rgb200.b}`);
+            }
             // 动态更新光标光晕颜色
             if (cursorGlow) {
                 cursorGlow.style.background = `radial-gradient(circle,${accent500}1e 0%,${accent500}0d 35%,transparent 70%)`;
@@ -3236,8 +3563,9 @@
             if (cursorGlow) cursorGlow.classList.toggle('hidden-glow', !fxEnabled);
             if (!fxEnabled && musicAnimId) { cancelAnimationFrame(musicAnimId); musicAnimId = null; }
             if (fxEnabled && !musicAnimId) drawMusicViz();
-            const fxItem = document.querySelector('.fab-item[data-action="fx"]');
-            if (fxItem) fxItem.firstChild.textContent = fxEnabled ? '💫' : '🫥';
+            const fxIcon = document.querySelector('.fab-item[data-action="fx"] .fab-icon');
+            if (fxIcon) fxIcon.innerHTML = '<i class="fa-solid ' + (fxEnabled ? 'fa-wand-magic-sparkles' : 'fa-eye-slash') + '"></i>';
+            if (typeof applySeasonFx === 'function') applySeasonFx(); // 联动季节特效
         }
 
         function toggleFx() {
@@ -3260,6 +3588,79 @@
         }
 
         // ==========================================
+        // 30.6 季节飘落特效（3-4 月樱花 / 12-2 月雪花）
+        //      localStorage：'' 自动（按月份）/ '1' 强制开 / '0' 关闭
+        //      尊重动效总开关与系统「减少动效」偏好，页面隐藏时自动停歇
+        // ==========================================
+        const SEASON_FX_KEY = 'tachy_season_fx';
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let seasonLayer = null;
+        let seasonTimer = null;
+
+        function getSeasonType() {
+            const m = new Date().getMonth() + 1; // 1-12
+            if (m === 3 || m === 4) return 'sakura';
+            if (m === 12 || m <= 2) return 'snow';
+            return null;
+        }
+        function seasonFxActiveType() {
+            const pref = localStorage.getItem(SEASON_FX_KEY) || '';
+            if (pref === '0') return null;
+            if (pref === '1') return getSeasonType() || 'sakura';
+            return getSeasonType();
+        }
+        function spawnPetal(type) {
+            if (!seasonLayer) return;
+            // 并发数量上限，移动端更保守
+            if (seasonLayer.childElementCount >= (window.innerWidth < 768 ? 12 : 22)) return;
+            const el = document.createElement('span');
+            el.className = 'season-petal';
+            if (type === 'snow') {
+                el.textContent = Math.random() < 0.8 ? '❄️' : '❅';
+            } else {
+                el.textContent = Math.random() < 0.85 ? '🌸' : '💮';
+            }
+            const duration = 7 + Math.random() * 6;
+            el.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+            el.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
+            el.style.setProperty('--sway', (Math.random() * 160 - 80).toFixed(0) + 'px');
+            el.style.setProperty('--spin', (360 + Math.random() * 540).toFixed(0) + 'deg');
+            el.style.setProperty('--petal-opacity', (0.55 + Math.random() * 0.4).toFixed(2));
+            el.style.animationDuration = duration.toFixed(2) + 's';
+            el.addEventListener('animationend', () => el.remove());
+            seasonLayer.appendChild(el);
+        }
+        function applySeasonFx() {
+            const type = (fxEnabled && !prefersReducedMotion) ? seasonFxActiveType() : null;
+            if (!type) {
+                if (seasonTimer) { clearInterval(seasonTimer); seasonTimer = null; }
+                if (seasonLayer) { seasonLayer.remove(); seasonLayer = null; }
+                return;
+            }
+            if (!seasonLayer) {
+                seasonLayer = document.createElement('div');
+                seasonLayer.id = 'season-fx-layer';
+                seasonLayer.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(seasonLayer);
+            }
+            if (seasonTimer) clearInterval(seasonTimer);
+            const interval = window.innerWidth < 768 ? 700 : 450;
+            seasonTimer = setInterval(() => {
+                if (document.hidden) return; // 页面隐藏时暂停生成
+                spawnPetal(type);
+            }, interval);
+        }
+        function cycleSeasonFx() {
+            const pref = localStorage.getItem(SEASON_FX_KEY) || '';
+            const order = ['', '1', '0'];
+            const names = { '': '🍃 自动（按季节）', '1': '🌸 强制开启', '0': '🚫 已关闭' };
+            const next = order[(order.indexOf(pref) + 1) % order.length];
+            localStorage.setItem(SEASON_FX_KEY, next);
+            applySeasonFx();
+            showToast('季节特效：' + names[next], 'info');
+        }
+
+        // ==========================================
         // 31. FAB 快捷菜单
         // ==========================================
         const fabToggle = document.getElementById('fabToggle');
@@ -3270,6 +3671,7 @@
             fabToggle.addEventListener('click', () => {
                 fabOpen = !fabOpen;
                 fabToggle.classList.toggle('open', fabOpen);
+                fabToggle.innerHTML = '<i class="fa-solid ' + (fabOpen ? 'fa-xmark' : 'fa-bolt') + '"></i>';
                 fabItems.forEach(item => item.classList.toggle('visible', fabOpen));
                 playToggle();
             });
@@ -3349,7 +3751,7 @@
         // ==========================================
 
         // ==========================================
-        // 37. 嵌入式音乐播放器（Radio Browser API + 音频可视化 + 碟片）
+        // 37. 嵌入式音乐播放器（Radio Browser API + 音频可视化 + 封面卡片）
         // ==========================================
         const musicAudio = document.getElementById('music-audio');
         const visualizerMain = document.getElementById('visualizer-main');
@@ -3359,6 +3761,7 @@
         const vinylLabel = document.getElementById('vinyl-label');
         const musicTitleEl = document.getElementById('music-title');
         const musicArtistEl = document.getElementById('music-artist');
+        const liveBadgeEl = document.getElementById('live-badge');
         const musicPlayBtn = document.getElementById('music-play');
         const musicPrevBtn = document.getElementById('music-prev');
         const musicNextBtn = document.getElementById('music-next');
@@ -3515,9 +3918,8 @@
             if (!visualizerMain || !vizMainCtx || !vizSize.w) return;
             const { w, h, dpr } = vizSize;
             vizMainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            // 背景由 CSS 渐变承担（不覆盖填充），这里只清空画布
             vizMainCtx.clearRect(0, 0, w, h);
-            vizMainCtx.fillStyle = vizAccent.dark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)';
-            vizMainCtx.fillRect(0, 0, w, h);
 
             let data;
             if (musicVizEnabled && musicAnalyser && musicVizData) {
@@ -3629,6 +4031,12 @@
                         vizMainCtx.fill();
                     }
                 }
+                // 底部基线高光
+                const baseGrad = vizMainCtx.createLinearGradient(0, h - 5, 0, h);
+                baseGrad.addColorStop(0, accent500 + '00');
+                baseGrad.addColorStop(1, accent500 + '66');
+                vizMainCtx.fillStyle = baseGrad;
+                vizMainCtx.fillRect(0, h - 5, w, 5);
             }
 
             musicAnimId = requestAnimationFrame(drawMusicViz);
@@ -3636,8 +4044,10 @@
 
         // --- 播放器控制 ---
         function updateMusicUI() {
-            if (!musicPlayBtn) return;
-            musicPlayBtn.textContent = musicPlaying ? '⏸' : '▶';
+            if (musicPlayBtn) {
+                musicPlayBtn.innerHTML = '<i class="fa-solid ' + (musicPlaying ? 'fa-pause' : 'fa-play') + '"></i>';
+            }
+            if (liveBadgeEl) liveBadgeEl.classList.toggle('on', musicPlaying);
             if (vinylDisc) {
                 vinylDisc.classList.toggle('spinning', musicPlaying);
                 vinylDisc.classList.toggle('paused', !musicPlaying);
@@ -3682,7 +4092,6 @@
         async function playRandomStation(retryCount = 0) {
             const MAX_RETRIES = 5;
             if (retryCount >= MAX_RETRIES) {
-                musicPlayBtn.textContent = '▶';
                 musicPlaying = false;
                 updateMusicUI();
                 showToast('❌ 连续失败，请稍后再试', 'warning');
@@ -3690,13 +4099,13 @@
             }
 
             if (retryCount === 0) {
-                musicPlayBtn.textContent = '⏳';
+                musicPlayBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
                 showToast('🔍 搜索电台中...', 'info');
             }
 
             const station = pickRandomStation();
             if (!station) {
-                musicPlayBtn.textContent = '▶';
+                musicPlayBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
                 showToast('❌ 曲库为空', 'warning');
                 return;
             }
@@ -3799,7 +4208,7 @@
         function updateSleepBtn() {
             if (!musicSleepBtn) return;
             const active = sleepEndAt != null;
-            musicSleepBtn.textContent = active ? '🌙' : '⏱';
+            musicSleepBtn.innerHTML = '<i class="fa-solid ' + (active ? 'fa-moon' : 'fa-clock') + '"></i>';
             musicSleepBtn.title = active
                 ? `睡眠定时进行中：约 ${Math.max(1, Math.round((sleepEndAt - Date.now()) / 60000))} 分钟后暂停音乐`
                 : '睡眠定时：关/30/60/90 分钟';
@@ -3879,7 +4288,7 @@
         function updateMusicOrb() {
             if (!musicOrb) return;
             musicOrb.classList.toggle('playing', musicPlaying);
-            if (mmpPlayBtn) mmpPlayBtn.textContent = musicPlaying ? '⏸' : '▶';
+            if (mmpPlayBtn) mmpPlayBtn.innerHTML = '<i class="fa-solid ' + (musicPlaying ? 'fa-pause' : 'fa-play') + '"></i>';
         }
 
         function playPrevStation() {
@@ -4013,27 +4422,29 @@
         };
 
         const CMD_ACTIONS = [
-            { icon:'🏠', title:'回到顶部', hint:'hero', keywords:'top home 首页', run:() => window.scrollTo({ top:0, behavior:'smooth' }) },
-            { icon:'👤', title:'关于我', hint:'about', keywords:'关于 about', run:() => scrollToSection('about') },
-            { icon:'🎵', title:'音乐盒子', hint:'music', keywords:'音乐 电台 music', run:() => scrollToSection('music-section') },
-            { icon:'🧠', title:'技术栈', hint:'skills', keywords:'技能 skills', run:() => scrollToSection('skills') },
-            { icon:'🛤️', title:'我的历程', hint:'timeline', keywords:'历程 timeline', run:() => scrollToSection('timeline') },
-            { icon:'🚧', title:'项目作品', hint:'projects', keywords:'项目 projects', run:() => scrollToSection('projects') },
-            { icon:'📷', title:'照片墙', hint:'gallery', keywords:'照片 画廊 gallery', run:() => scrollToSection('gallery') },
-            { icon:'💬', title:'留言板', hint:'guestbook', keywords:'留言 guestbook', run:() => scrollToSection('guestbook') },
-            { icon:'📮', title:'找到我', hint:'contact', keywords:'联系 contact', run:() => scrollToSection('contact') },
-            { icon:'🌓', title:'切换暗色 / 亮色模式', hint:'theme', keywords:'主题 暗色 亮色 theme dark light', run:() => themeToggle.click() },
-            { icon:'🎨', title:'切换主题色', hint:'accent', keywords:'主题色 换色 accent', run:() => cycleAccent() },
-            { icon:'▶️', title:'播放 / 暂停音乐', hint:'play', keywords:'播放 暂停 音乐 play music', run:() => toggleMusicPlay() },
-            { icon:'⏭️', title:'下一个电台', hint:'next', keywords:'下一个 电台 next', run:() => playRandomStation() },
-            { icon:'🔊', title:'开关音效', hint:'sound', keywords:'音效 sound', run:() => { if (soundToggleBtn) soundToggleBtn.click(); } },
-            { icon:'✨', title:'触发彩蛋：赛博飞升', hint:'egg', keywords:'彩蛋 飞升 egg', run:() => fireEasterEgg() },
-            { icon:'💬', title:'复制微信号', hint:'wechat', keywords:'微信 复制 wechat', run:() => copyText('zzydhaoren') },
-            { icon:'🐧', title:'复制 QQ 号', hint:'qq', keywords:'qq 复制', run:() => copyText('2504419411') },
-            { icon:'🐙', title:'打开 GitHub', hint:'github', keywords:'github 仓库', run:() => window.open('https://github.com/tachy001', '_blank', 'noopener') },
-            { icon:'💫', title:'开关页面动效', hint:'fx', keywords:'动效 省电 fx', run:() => toggleFx() },
-            { icon:'📤', title:'分享本页', hint:'share', keywords:'分享 share', run:() => sharePage() },
-            { icon:'⌨️', title:'快捷键一览', hint:'help', keywords:'快捷键 帮助 help', run:() => openHelp() },
+            { icon:'<i class="fa-solid fa-house"></i>', title:'回到顶部', hint:'hero', keywords:'top home 首页', run:() => window.scrollTo({ top:0, behavior:'smooth' }) },
+            { icon:'<i class="fa-solid fa-user"></i>', title:'关于我', hint:'about', keywords:'关于 about', run:() => scrollToSection('about') },
+            { icon:'<i class="fa-solid fa-music"></i>', title:'音乐盒子', hint:'music', keywords:'音乐 电台 music', run:() => scrollToSection('music-section') },
+            { icon:'<i class="fa-solid fa-brain"></i>', title:'技术栈', hint:'skills', keywords:'技能 skills', run:() => scrollToSection('skills') },
+            { icon:'<i class="fa-solid fa-route"></i>', title:'我的历程', hint:'timeline', keywords:'历程 timeline', run:() => scrollToSection('timeline') },
+            { icon:'<i class="fa-solid fa-code"></i>', title:'项目作品', hint:'projects', keywords:'项目 projects', run:() => scrollToSection('projects') },
+            { icon:'<i class="fa-solid fa-images"></i>', title:'照片墙', hint:'gallery', keywords:'照片 画廊 gallery', run:() => scrollToSection('gallery') },
+            { icon:'<i class="fa-solid fa-comment-dots"></i>', title:'留言板', hint:'guestbook', keywords:'留言 guestbook', run:() => scrollToSection('guestbook') },
+            { icon:'<i class="fa-solid fa-envelope"></i>', title:'找到我', hint:'contact', keywords:'联系 contact', run:() => scrollToSection('contact') },
+            { icon:'<i class="fa-solid fa-circle-half-stroke"></i>', title:'切换暗色 / 亮色模式', hint:'theme', keywords:'主题 暗色 亮色 theme dark light', run:() => themeToggle.click() },
+            { icon:'<i class="fa-solid fa-clock"></i>', title:'主题模式：自动 / 亮 / 暗', hint:'theme-mode', keywords:'主题模式 自动 夜间 夜间模式 auto night', run:() => cycleThemeMode() },
+            { icon:'<i class="fa-solid fa-palette"></i>', title:'切换主题色', hint:'accent', keywords:'主题色 换色 accent', run:() => cycleAccent() },
+            { icon:'<i class="fa-solid fa-play"></i>', title:'播放 / 暂停音乐', hint:'play', keywords:'播放 暂停 音乐 play music', run:() => toggleMusicPlay() },
+            { icon:'<i class="fa-solid fa-forward-step"></i>', title:'下一个电台', hint:'next', keywords:'下一个 电台 next', run:() => playRandomStation() },
+            { icon:'<i class="fa-solid fa-volume-high"></i>', title:'开关音效', hint:'sound', keywords:'音效 sound', run:() => { if (soundToggleBtn) soundToggleBtn.click(); } },
+            { icon:'<i class="fa-solid fa-wand-magic-sparkles"></i>', title:'触发彩蛋：赛博飞升', hint:'egg', keywords:'彩蛋 飞升 egg', run:() => fireEasterEgg() },
+            { icon:'<i class="fa-brands fa-weixin"></i>', title:'复制微信号', hint:'wechat', keywords:'微信 复制 wechat', run:() => copyText('zzydhaoren') },
+            { icon:'<i class="fa-brands fa-qq"></i>', title:'复制 QQ 号', hint:'qq', keywords:'qq 复制', run:() => copyText('2504419411') },
+            { icon:'<i class="fa-brands fa-github"></i>', title:'打开 GitHub', hint:'github', keywords:'github 仓库', run:() => window.open('https://github.com/tachy001', '_blank', 'noopener') },
+            { icon:'<i class="fa-solid fa-wand-magic"></i>', title:'开关页面动效', hint:'fx', keywords:'动效 省电 fx', run:() => toggleFx() },
+            { icon:'<i class="fa-solid fa-share-nodes"></i>', title:'分享本页', hint:'share', keywords:'分享 share', run:() => sharePage() },
+            { icon:'<i class="fa-solid fa-leaf"></i>', title:'季节特效：自动 / 开 / 关', hint:'season', keywords:'季节 樱花 雪花 特效 season sakura snow', run:() => cycleSeasonFx() },
+            { icon:'<i class="fa-solid fa-keyboard"></i>', title:'快捷键一览', hint:'help', keywords:'快捷键 帮助 help', run:() => openHelp() },
         ];
 
         let cmdFiltered = CMD_ACTIONS;
@@ -4052,7 +4463,7 @@
                 btn.className = 'cmd-item' + (i === cmdSelected ? ' selected' : '');
                 const icon = document.createElement('span');
                 icon.className = 'cmd-item-icon';
-                icon.textContent = c.icon;
+                icon.innerHTML = c.icon;
                 const title = document.createElement('span');
                 title.className = 'cmd-item-title';
                 title.textContent = c.title;

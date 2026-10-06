@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tachy - 个人主页</title>
-    <meta name="description" content="Tachy 的个人主页 — 一个喜欢写代码的赛博生物。技术栈、项目作品、随机电台音乐盒子、留言板，欢迎来玩。">
+    <meta name="description" content="Tachy 的个人主页 — 一个喜欢写代码的赛博生物。随机电台音乐盒子、照片墙，欢迎来玩。">
     <meta name="author" content="Tachy">
     <meta name="theme-color" id="meta-theme-color" content="#fdf2f8">
     <meta property="og:title" content="Tachy - 个人主页">
@@ -77,7 +77,6 @@
             --skill-track: #e5e7eb;
             --tag-bg: rgba(255,255,255,0.8);
             --input-bg: rgba(255,255,255,0.7);
-            --timeline-line: var(--accent-200);
         }
 
         /* 暗色模式 */
@@ -94,7 +93,6 @@
             --skill-track: #2d2438;
             --tag-bg: rgba(255,255,255,0.06);
             --input-bg: rgba(255,255,255,0.08);
-            --timeline-line: #3b2a48;
         }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
@@ -168,19 +166,6 @@
         }
         .nav-link:hover::after { transform: translateX(-50%) scaleX(1); }
 
-        /* ========== 技能进度条 ========== */
-        .skill-bar-fill {
-            height: 6px; border-radius: 10px;
-            background: linear-gradient(90deg, var(--accent-300), var(--accent-500), var(--accent-600));
-            background-size: 200% 100%;
-            animation: gradientBar 4s ease infinite;
-            width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        /* ========== 项目卡片 ========== */
-        .project-img-placeholder { transition: transform 0.5s ease; }
-        .project-card:hover .project-img-placeholder { transform: scale(1.05); }
-
         /* ========== 打字效果 ========== */
         .typewriter-cursor {
             display: inline-block; width: 2px; height: 1.2em;
@@ -253,12 +238,6 @@
             transition: stroke-dashoffset 0.15s linear;
         }
         #back-to-top .btp-arrow { position: relative; z-index: 1; }
-
-        /* ========== 留言板 ========== */
-        .message-bubble {
-            animation: msgIn 0.4s ease-out;
-        }
-        @keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
         /* ========== 彩蛋特效关键帧 ========== */
         @keyframes shockwaveRing {
@@ -361,162 +340,6 @@
             transition:transform 0.15s ease-out,box-shadow 0.3s ease;
         }
         .tilt-card:hover { z-index:5; }
-
-        /* ========== FAB 快捷菜单（悬浮于音乐球上方，向上展开） ========== */
-        /* 说明：DOM 顺序为「选项…切换按钮」，配合 flex-direction: column，
-           切换按钮固定在容器底部（即返回顶部正上方），选项向上弹出。 */
-        #fab-menu {
-            position:fixed;bottom:146px;right:30px;z-index:100;
-            display:flex;flex-direction:column;gap:10px;align-items:center;
-        }
-        .fab-toggle {
-            width:48px;height:48px;border-radius:50%;
-            background:linear-gradient(135deg,var(--accent-500,#ec4899),var(--accent-600,#db2777));
-            color:#fff;border:none;cursor:pointer;
-            box-shadow:0 4px 20px rgba(var(--accent-rgb),0.4);
-            display:flex;align-items:center;justify-content:center;
-            font-size:20px;transition:all 0.3s ease;
-            z-index:2;
-        }
-        .fab-toggle:hover { transform:scale(1.1);box-shadow:0 6px 28px rgba(var(--accent-rgb),0.5); }
-        .fab-toggle.open { transform:scale(1.06); }
-        .fab-toggle i { transition:transform 0.3s ease; }
-        .fab-item {
-            position:relative; /* 修正 fab-tip 工具提示的定位基准 */
-            width:40px;height:40px;border-radius:50%;
-            background:var(--glass-bg);backdrop-filter:blur(16px);
-            border:1px solid var(--glass-border);color:var(--text-secondary);
-            cursor:pointer;display:flex;align-items:center;justify-content:center;
-            font-size:16px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-            opacity:0;transform:scale(0);pointer-events:none;
-            box-shadow:0 2px 12px rgba(0,0,0,0.06);
-        }
-        .fab-item.visible { opacity:1;transform:scale(1);pointer-events:auto; }
-        .fab-item:hover { color:var(--accent-500,#ec4899);transform:scale(1.15);border-color:var(--accent-300,#f9a8d4); }
-        .fab-item .fab-tip {
-            position:absolute;right:52px;background:var(--glass-bg);
-            backdrop-filter:blur(12px);border:1px solid var(--glass-border);
-            color:var(--text);font-size:11px;font-weight:500;
-            padding:3px 10px;border-radius:6px;white-space:nowrap;
-            opacity:0;pointer-events:none;transition:opacity 0.2s;
-        }
-        .fab-item:hover .fab-tip { opacity:1; }
-
-        /* ========== 音乐悬浮球（Orb）+ 迷你播放器 ========== */
-        #music-orb-wrap {
-            position: fixed; right: 30px; bottom: 88px; z-index: 101;
-        }
-        #music-orb {
-            position: relative; width: 48px; height: 48px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-400,#f472b6), var(--accent-600,#db2777));
-            border: none; cursor: pointer; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 20px rgba(var(--accent-rgb),0.45);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        #music-orb:hover { transform: scale(1.1); }
-        #music-orb:active { transform: scale(0.95); }
-        /* 渐变旋转光环（hover 时出现并旋转） */
-        #music-orb::before {
-            content: ''; position: absolute; inset: -5px; border-radius: 50%;
-            background: conic-gradient(from 0deg,
-                var(--accent-400,#f472b6), transparent 30%,
-                var(--accent-600,#db2777) 50%, transparent 80%,
-                var(--accent-400,#f472b6));
-            z-index: -1; opacity: 0; transition: opacity 0.3s ease;
-            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
-            mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
-        }
-        #music-orb:hover::before { opacity: 1; animation: orbHaloSpin 2.5s linear infinite; }
-        @keyframes orbHaloSpin { to { transform: rotate(360deg); } }
-        /* 播放中的跳动音乐柱 */
-        #music-orb .orb-bars {
-            display: none; align-items: flex-end; gap: 3px; height: 16px;
-        }
-        #music-orb .orb-bars i {
-            width: 3px; height: 100%; border-radius: 2px; background: #fff;
-            animation: orbBarWave 1.2s ease-in-out infinite;
-        }
-        #music-orb .orb-bars i:nth-child(2) { animation-delay: 0.15s; }
-        #music-orb .orb-bars i:nth-child(3) { animation-delay: 0.3s; }
-        @keyframes orbBarWave { 0%,100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
-        #music-orb.playing .orb-bars { display: flex; }
-        #music-orb.playing .orb-icon { display: none; }
-        /* 弹性入场 */
-        #music-orb.orb-enter { animation: orbElasticIn 0.5s cubic-bezier(0.22,1.25,0.36,1); }
-        @keyframes orbElasticIn {
-            0% { opacity: 0; transform: scale(0.55); }
-            70% { opacity: 1; transform: scale(1.12); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* 迷你播放器面板（悬浮球上方弹出） */
-        #mini-music-panel {
-            position: absolute; right: 0; bottom: 58px; width: 300px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.18);
-            padding: 12px; display: none;
-        }
-        #mini-music-panel.open {
-            display: block;
-            animation: mmpPop 0.42s cubic-bezier(0.22,1.25,0.36,1);
-        }
-        @keyframes mmpPop {
-            0% { opacity: 0; transform: translateY(12px) scale(0.85); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .mmp-header { display: flex; align-items: center; gap: 8px; }
-        .mmp-info { flex: 1; min-width: 0; }
-        .mmp-title {
-            font-weight: 700; font-size: 14px; color: var(--text);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .mmp-artist {
-            font-size: 12px; color: var(--text-secondary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .mmp-controls {
-            display: flex; align-items: center; justify-content: center;
-            gap: 6px; margin-top: 10px;
-        }
-        .mmp-btn {
-            width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
-            background: var(--tag-bg); color: var(--text-secondary); font-size: 13px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease; border: 1px solid var(--glass-border);
-        }
-        .mmp-btn:hover {
-            color: var(--accent-500,#ec4899); border-color: var(--accent-300,#f9a8d4);
-            transform: scale(1.08);
-        }
-        .mmp-btn.mmp-play {
-            width: 42px; height: 42px; font-size: 16px;
-            background: linear-gradient(135deg,var(--accent-500,#ec4899),var(--accent-600,#db2777));
-            color: #fff; border: none;
-            box-shadow: 0 4px 16px rgba(var(--accent-rgb),0.35);
-        }
-        .mmp-btn.mmp-close { width: 26px; height: 26px; font-size: 11px; background: transparent; border: none; }
-        #mmp-playlist {
-            display: none; max-height: 260px; overflow-y: auto;
-            margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 8px;
-        }
-        #mmp-playlist.open { display: block; }
-        .mmp-station {
-            display: flex; align-items: center; justify-content: space-between; gap: 8px;
-            width: 100%; text-align: left; background: transparent; border: none; cursor: pointer;
-            padding: 7px 8px; border-radius: 10px; font-size: 12px; color: var(--text);
-            transition: background 0.15s ease; font-family: inherit;
-        }
-        .mmp-station:hover { background: rgba(var(--accent-rgb),0.1); }
-        .mmp-station.active {
-            background: rgba(var(--accent-rgb),0.16);
-            color: var(--accent-500,#ec4899); font-weight: 600;
-        }
-        .mmp-station .mmp-st-tags { color: var(--text-secondary); font-size: 11px; font-weight: 400; }
 
         /* 主播放键的渐变旋转光环 */
         .music-btn.play-main { position: relative; }
@@ -920,9 +743,6 @@
             .glass-card { border-radius: 20px !important; }
             .glass-card:hover { transform: none; }
             #back-to-top { bottom: 20px; right: 16px; width: 40px; height: 40px; }
-            #fab-menu { bottom: 128px; right: 16px; }
-            #music-orb-wrap { right: 16px; bottom: 70px; }
-            #mini-music-panel { width: 272px; }
         }
 
         /* ========== 阅读进度条 ========== */
@@ -973,39 +793,6 @@
         #lightbox.active img { transform: scale(1); }
         #lightbox-close { position: absolute; top: 24px; right: 24px; color: #fff; font-size: 32px; cursor: pointer; z-index: 1; }
         #lightbox-close:hover { color: var(--accent-400); }
-
-        /* ========== 贡献热力图 ========== */
-        .heat-cell { width: 13px; height: 13px; border-radius: 2px; transition: all 0.2s ease; }
-        .heat-cell:hover { transform: scale(1.4); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .heat-l0 { background: #ebedf0; } [data-theme="dark"] .heat-l0 { background: #2d2438; }
-        .heat-l1 { background: var(--accent-100); } [data-theme="dark"] .heat-l1 { background: #4a1942; }
-        .heat-l2 { background: var(--accent-300); } [data-theme="dark"] .heat-l2 { background: #7b2d6e; }
-        .heat-l3 { background: var(--accent-400); } [data-theme="dark"] .heat-l3 { background: #a8418f; }
-        .heat-l4 { background: var(--accent-600); } [data-theme="dark"] .heat-l4 { background: #d456a8; }
-
-        /* ========== 标签云 ========== */
-        .tag-cloud-item {
-            display: inline-block; padding: 6px 14px; margin: 4px;
-            border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500;
-            transition: all 0.3s ease; user-select: none;
-            background: var(--tag-bg); color: var(--text-secondary);
-            border: 1px solid var(--glass-border);
-        }
-        .tag-cloud-item:hover { color: var(--accent-500); border-color: var(--accent-300); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(var(--accent-rgb),0.2); }
-
-        /* ========== 友情链接 ========== */
-        .friend-link-card {
-            display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-            border-radius: 16px; transition: all 0.3s ease; text-decoration: none;
-            background: var(--tag-bg); border: 1px solid var(--glass-border); color: var(--text);
-        }
-        .friend-link-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(var(--accent-rgb),0.15); border-color: var(--accent-300); }
-        .friend-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 18px; flex-shrink: 0; overflow: hidden; }
-        .friend-avatar img {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: contain; display: block;
-            background: #fff; /* 垫白底：透明底的 favicon（如掘金旧版蓝猫 logo）在品牌色圆底上会发虚看不清 */
-        }
 
         /* ========== 通用交互细节 ========== */
         ::selection { background:var(--accent-300); color:#fff; }
@@ -1170,10 +957,6 @@
         #festival-banner:hover { transform: translateX(-50%) scale(1.05); }
         @media (max-width: 640px) { #festival-banner { top: 64px; font-size: 12px; padding: 7px 14px; } }
 
-        /* ========== 留言点赞/置顶状态 ========== */
-        .gb-like.liked, .gb-pin.pinned { color: var(--accent-500); font-weight: 600; }
-        .gb-like:not(.liked):hover, .gb-pin:not(.pinned):hover { color: var(--accent-500); }
-
         /* ========== 动效总开关 ========== */
         .fx-off .animate-blob { animation: none !important; }
         .fx-off #cursor-glow { display: none !important; }
@@ -1196,17 +979,6 @@
         .nav-link { padding: 6px 12px; border-radius: 8px; transition: color 0.3s, background 0.3s; }
         .nav-link:hover { background: rgba(var(--accent-rgb),0.08); }
         [data-theme="dark"] .nav-link:hover { background: rgba(var(--accent-rgb),0.16); }
-        /* 标签云描边 pill 风格 */
-        .tag-cloud-item {
-            background: transparent; border: 1.5px solid var(--glass-border);
-            color: var(--text-secondary); padding: 5px 14px;
-        }
-        .tag-cloud-item:hover {
-            color: var(--accent-500,#ec4899); border-color: var(--accent-500,#ec4899);
-            background: transparent; transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        [data-theme="dark"] .tag-cloud-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.35); }
         /* Toast 弹性入场（lrht 弹性曲线） */
         @keyframes toastIn {
             0% { opacity: 0; transform: translateX(60px) scale(0.8); }
@@ -1215,35 +987,13 @@
         }
         /* Lightbox 图片弹性弹出 */
         #lightbox img { transition: transform 0.35s cubic-bezier(0.22,1.25,0.36,1); }
-        /* 友情链接卡片 hover 滑入箭头（lrht group-hover 风格） */
-        .friend-link-card { position: relative; }
-        .friend-link-card::after {
-            content: '›'; position: absolute; right: 18px; top: 50%;
-            transform: translateY(-50%) translateX(-8px);
-            font-size: 20px; font-weight: 700; line-height: 1;
-            color: var(--accent-500,#ec4899); opacity: 0;
-            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,1.25,0.36,1);
-        }
-        .friend-link-card:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
-        /* 项目卡片 hover 渐变高光（lrht device-card 风格） */
-        .project-card .project-img-placeholder { position: relative; }
-        .project-card .project-img-placeholder::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(var(--accent-rgb),0.14), transparent 65%);
-            opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
-        }
-        .project-card:hover .project-img-placeholder::after { opacity: 1; }
-        /* 技能条 hover 加粗 */
-        .skill-bar-fill:hover { transform: scaleY(1.15); }
         /* 社交图标弹性 hover */
         .social-icon-link:hover { transform: translateY(-2px) scale(1.06); }
         /* 按压反馈（lrht active:scale 风格） */
-        .music-btn:active, .mmp-btn:active, .fab-item:active,
-        .social-icon-link:active, .tag-cloud-item:active, .friend-link-card:active,
-        #back-to-top:active, #music-orb:active, .dot-nav-item:active,
+        .music-btn:active,
+        .social-icon-link:active,
+        #back-to-top:active, .dot-nav-item:active,
         .theme-toggle:active { transform: scale(0.92); }
-        .fab-toggle:active { transform: scale(0.9); }
-        .fab-toggle.open:active { transform: scale(0.9); }
         /* 渐变主按钮按压反馈 */
         a.bg-gradient-to-r:active, button.bg-gradient-to-r:active { transform: scale(0.95); }
         /* 照片懒加载骨架屏（lrht shimmer 风格） */
@@ -1284,13 +1034,6 @@
             box-shadow: 0 8px 20px rgba(var(--accent-rgb),0.35);
         }
         .btn-accent:hover { box-shadow: 0 12px 28px rgba(var(--accent-rgb),0.5); }
-        /* 主题色小标签（项目 tags 等） */
-        .tag-accent {
-            background: var(--accent-50); color: var(--accent-600);
-        }
-        [data-theme="dark"] .tag-accent {
-            background: rgba(var(--accent-rgb),0.14); color: var(--accent-300);
-        }
         /* 主题色胶囊（徽章/日期等） */
         .pill-accent {
             background: rgba(var(--accent-rgb),0.08);
@@ -1378,10 +1121,6 @@
         <span class="dot-nav-item active" data-target="hero"><span class="dot-tooltip">首页</span></span>
         <span class="dot-nav-item" data-target="about"><span class="dot-tooltip">关于</span></span>
         <span class="dot-nav-item" data-target="contact"><span class="dot-tooltip">联系</span></span>
-        <span class="dot-nav-item" data-target="skills"><span class="dot-tooltip">技能</span></span>
-        <span class="dot-nav-item" data-target="timeline"><span class="dot-tooltip">历程</span></span>
-        <span class="dot-nav-item" data-target="projects"><span class="dot-tooltip">项目</span></span>
-        <span class="dot-nav-item" data-target="guestbook"><span class="dot-tooltip">留言</span></span>
         <span class="dot-nav-item" data-target="gallery"><span class="dot-tooltip">照片</span></span>
     </nav>
 
@@ -1412,10 +1151,6 @@
             <div class="hidden sm:flex items-center gap-6 text-sm font-medium">
                 <a href="#about" class="nav-link">关于</a>
                 <a href="#contact" class="nav-link">联系</a>
-                <a href="#skills" class="nav-link">技能</a>
-                <a href="#timeline" class="nav-link">历程</a>
-                <a href="#projects" class="nav-link">项目</a>
-                <a href="#guestbook" class="nav-link">留言</a>
                 <a href="#gallery" class="nav-link">照片</a>
             </div>
 
@@ -1433,10 +1168,6 @@
         <div id="mobileMenu" class="sm:hidden hidden mt-3 space-y-2 text-center text-sm font-medium pb-2">
             <a href="#about" class="block py-2 rounded-lg hover:bg-white/10 transition">关于</a>
             <a href="#contact" class="block py-2 rounded-lg hover:bg-white/10 transition">联系</a>
-            <a href="#skills" class="block py-2 rounded-lg hover:bg-white/10 transition">技能</a>
-            <a href="#timeline" class="block py-2 rounded-lg hover:bg-white/10 transition">历程</a>
-            <a href="#projects" class="block py-2 rounded-lg hover:bg-white/10 transition">项目</a>
-            <a href="#guestbook" class="block py-2 rounded-lg hover:bg-white/10 transition">留言</a>
             <a href="#gallery" class="block py-2 rounded-lg hover:bg-white/10 transition">照片</a>
         </div>
     </nav>
@@ -1547,14 +1278,10 @@
                         <p class="mt-4 text-xs text-gray-400" id="clock-greeting"></p>
                     </div>
                     <!-- 统计面板 -->
-                    <div class="glass-card rounded-3xl p-5 opacity-0 animate-fade-in-up grid grid-cols-3 gap-3 text-center" style="animation-delay:0.3s;">
+                    <div class="glass-card rounded-3xl p-5 opacity-0 animate-fade-in-up grid grid-cols-2 gap-3 text-center" style="animation-delay:0.3s;">
                         <div>
                             <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-visitors">--</div>
                             <div class="text-xs text-gray-400">访客</div>
-                        </div>
-                        <div>
-                            <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-projects">6</div>
-                            <div class="text-xs text-gray-400">项目</div>
                         </div>
                         <div>
                             <div class="text-2xl font-extrabold" style="color:var(--accent-500);" id="stat-days">--</div>
@@ -1597,6 +1324,17 @@
                         <p class="font-bold" style="color:var(--text);">2504419411</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ========== 照片画廊 ========== -->
+        <section id="gallery" class="scroll-mt-20 space-y-8">
+            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
+                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">照片墙</h2>
+                <p style="color:var(--text-secondary);" class="text-sm">一些值得记录的瞬间</p>
+            </div>
+            <div class="opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="gallery-grid">
+                <!-- JS 动态渲染 -->
             </div>
         </section>
 
@@ -1653,128 +1391,6 @@
             <audio id="music-audio" crossorigin="anonymous" preload="none"></audio>
         </section>
 
-        <!-- ========== 技能 ========== -->
-        <section id="skills" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">技术栈</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">一些我会的 & 正在学习的东西</p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- 技能通过 JS 动态渲染 -->
-            </div>
-        </section>
-
-        <!-- ========== 个人时间线 ========== -->
-        <section id="timeline" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">我的历程</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">走过的路，每一步都算数</p>
-            </div>
-
-            <div class="relative max-w-2xl mx-auto">
-                <!-- 中间竖线 -->
-                <div class="absolute left-4 sm:left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2" style="background:var(--timeline-line);"></div>
-                <!-- 时间线项由 JS 渲染 -->
-                <div id="timeline-container" class="space-y-8"></div>
-            </div>
-        </section>
-
-        <!-- ========== 项目作品 ========== -->
-        <section id="projects" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">项目作品</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">一些折腾过的小玩意</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="projects-container">
-                <!-- JS 动态渲染 -->
-            </div>
-        </section>
-
-        <!-- ========== 留言板 ========== -->
-        <section id="guestbook" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">留言板</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">来都来了，留句话再走呗～</p>
-            </div>
-
-            <div class="max-w-2xl mx-auto space-y-6 opacity-0 animate-fade-in-up" style="animation-delay:0.1s;">
-                <!-- 留言表单 -->
-                <div class="glass-card rounded-3xl p-6 space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input type="text" id="gb-nickname" placeholder="你的昵称"
-                               class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-brand-300"
-                               style="background:var(--input-bg); border-color:var(--glass-border); color:var(--text);" />
-                        <input type="text" id="gb-contact" placeholder="联系方式（选填）"
-                               class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-brand-300"
-                               style="background:var(--input-bg); border-color:var(--glass-border); color:var(--text);" />
-                    </div>
-                    <textarea id="gb-message" rows="3" placeholder="说点什么..." maxlength="500"
-                              class="w-full px-4 py-3 rounded-xl border text-sm outline-none transition focus:ring-2 focus:ring-brand-300 resize-none"
-                              style="background:var(--input-bg); border-color:var(--glass-border); color:var(--text);"></textarea>
-                    <div class="flex items-center justify-between gap-2 flex-wrap">
-                        <div id="gb-emojis" class="flex items-center gap-1.5 flex-wrap" aria-label="快捷表情"></div>
-                        <span class="text-xs text-gray-400" id="gb-char-count">0/500</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-400" id="gb-count">0 条留言</span>
-                        <button id="gb-submit"
-                                class="btn-accent px-5 py-2.5 font-semibold rounded-xl hover:-translate-y-0.5 transition-all duration-300 text-sm">
-                            发布留言
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 留言列表 -->
-                <div id="gb-list" class="space-y-4"></div>
-            </div>
-        </section>
-
-        <!-- ========== 照片画廊 ========== -->
-        <section id="gallery" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">照片墙</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">一些值得记录的瞬间</p>
-            </div>
-            <div class="opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="gallery-grid">
-                <!-- JS 动态渲染 -->
-            </div>
-        </section>
-
-        <!-- ========== 贡献热力图 ========== -->
-        <section id="activity" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">活跃记录</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">过去一年的代码活跃度（模拟热力图）</p>
-            </div>
-            <div class="glass-card rounded-3xl p-4 sm:p-6 opacity-0 animate-fade-in-up overflow-x-auto" style="animation-delay:0.1s;" id="heatmap-container">
-                <!-- JS 动态渲染 -->
-            </div>
-        </section>
-
-        <!-- ========== 标签云 ========== -->
-        <section id="tagcloud" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">兴趣标签</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">点击标签试试看？</p>
-            </div>
-            <div class="glass-card rounded-3xl p-6 sm:p-8 text-center opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="tag-cloud">
-                <!-- JS 动态渲染 -->
-            </div>
-        </section>
-
-        <!-- ========== 友情链接 ========== -->
-        <section id="friends" class="scroll-mt-20 space-y-8">
-            <div class="text-center space-y-2 opacity-0 animate-fade-in-up">
-                <h2 class="text-2xl sm:text-3xl font-extrabold" style="color:var(--text);">友情链接</h2>
-                <p style="color:var(--text-secondary);" class="text-sm">大佬们的聚集地</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 opacity-0 animate-fade-in-up" style="animation-delay:0.1s;" id="friends-container">
-                <!-- JS 动态渲染 -->
-            </div>
-        </section>
-
     </main>
 
     <!-- ==================== Toast 通知容器 ==================== -->
@@ -1790,45 +1406,6 @@
     </div>
 
     <!-- ==================== 页脚 ==================== -->
-    <!-- ==================== FAB 快捷菜单 ==================== -->
-    <div id="fab-menu">
-        <div class="fab-item" data-action="accent" style="transition-delay:0.1s;">
-            <span class="fab-icon"><i class="fa-solid fa-palette"></i></span><span class="fab-tip">换主题色</span>
-        </div>
-        <div class="fab-item" data-action="fx" style="transition-delay:0.05s;">
-            <span class="fab-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span><span class="fab-tip">动效开关</span>
-        </div>
-        <div class="fab-item" data-action="share" style="transition-delay:0s;">
-            <span class="fab-icon"><i class="fa-solid fa-share-nodes"></i></span><span class="fab-tip">分享本页</span>
-        </div>
-        <button class="fab-toggle" id="fabToggle" aria-label="快捷菜单"><i class="fa-solid fa-bolt"></i></button>
-    </div>
-
-    <!-- ==================== 音乐悬浮球 + 迷你播放器 ==================== -->
-    <div id="music-orb-wrap">
-        <button id="music-orb" aria-label="音乐播放器" title="打开音乐播放器">
-            <span class="orb-icon">🎵</span>
-            <span class="orb-bars" aria-hidden="true"><i></i><i></i><i></i></span>
-        </button>
-        <div id="mini-music-panel" role="dialog" aria-label="迷你音乐播放器">
-            <div class="mmp-header">
-                <div class="mmp-info">
-                    <div class="mmp-title" id="mmp-title">点击播放随机电台</div>
-                    <div class="mmp-artist" id="mmp-artist">发现来自世界各地的音乐</div>
-                </div>
-                <button class="mmp-btn mmp-close" id="mmp-close" aria-label="收起"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="mmp-controls">
-                <button class="mmp-btn" id="mmp-prev" aria-label="上一个电台" title="上一个电台"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="mmp-btn mmp-play" id="mmp-play" aria-label="播放/暂停" title="播放/暂停"><i class="fa-solid fa-play"></i></button>
-                <button class="mmp-btn" id="mmp-next" aria-label="下一个电台" title="下一个电台"><i class="fa-solid fa-forward-step"></i></button>
-                <button class="mmp-btn" id="mmp-random" aria-label="随机电台" title="随机电台"><i class="fa-solid fa-shuffle"></i></button>
-                <button class="mmp-btn" id="mmp-list" aria-label="电台歌单" title="电台歌单"><i class="fa-solid fa-list"></i></button>
-            </div>
-            <div id="mmp-playlist"></div>
-        </div>
-    </div>
-
     <!-- ==================== 隐藏彩蛋按钮 ==================== -->
     <div id="easter-egg-trigger" style="position:fixed;bottom:80px;left:30px;z-index:99;width:40px;height:40px;border-radius:50%;cursor:pointer;opacity:0.15;transition:opacity 0.3s;color:#fff;background:var(--accent-500);display:flex;align-items:center;justify-content:center;font-size:16px;" title="✨ 点我试试">
         <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -2197,97 +1774,6 @@
         })();
 
         // ==========================================
-        // 7. 技能卡片渲染
-        // ==========================================
-        const skills = [
-            { name: 'HTML5', level: 90, icon: 'H', color: 'bg-orange-100 text-orange-500', tag: '熟练' },
-            { name: 'CSS3', level: 85, icon: 'C', color: 'bg-blue-100 text-blue-500', tag: '熟练' },
-            { name: 'JavaScript', level: 75, icon: 'J', color: 'bg-yellow-100 text-yellow-600', tag: '掌握' },
-            { name: 'Python', level: 70, icon: 'P', color: 'bg-purple-100 text-purple-500', tag: '掌握' },
-            { name: 'React', level: 50, icon: 'R', color: 'bg-cyan-100 text-cyan-500', tag: '学习中' },
-            { name: 'Git', level: 72, icon: 'G', color: 'bg-green-100 text-green-500', tag: '掌握' },
-            { name: 'Node.js', level: 55, icon: 'N', color: 'bg-emerald-100 text-emerald-600', tag: '学习中' },
-            { name: 'SQL', level: 65, icon: 'S', color: 'bg-indigo-100 text-indigo-500', tag: '掌握' },
-        ];
-
-        const skillsContainer = document.querySelector('#skills .grid');
-        if (skillsContainer) {
-            skillsContainer.innerHTML = skills.map((s, i) => `
-                <div class="glass-card rounded-3xl p-5 space-y-3 opacity-0 animate-fade-in-up" style="animation-delay:${0.08 * i}s;">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl ${s.color} flex items-center justify-center text-sm font-bold">${s.icon}</div>
-                        <div>
-                            <h3 class="font-bold text-sm" style="color:var(--text);">${s.name}</h3>
-                            <span class="text-xs text-gray-400">${s.tag}</span>
-                        </div>
-                        <span class="ml-auto text-sm font-bold" style="color:var(--accent-500);">${s.level}%</span>
-                    </div>
-                    <div class="w-full rounded-full h-1.5 overflow-hidden" style="background:var(--skill-track);">
-                        <div class="skill-bar-fill" data-width="${s.level}" style="width:0;"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ==========================================
-        // 8. 时间线渲染
-        // ==========================================
-        const timelineData = [
-            { date: '2024-01', title: '踏入编程世界', desc: '第一次写下 Hello World，从此一入代码深似海。', icon: '🚀' },
-            { date: '2024-04', title: '学会 HTML/CSS', desc: '做出了人生第一个网页，虽然丑但很激动。', icon: '🎨' },
-            { date: '2024-07', title: '入门 JavaScript', desc: '终于理解了闭包和异步，打开了新世界的大门。', icon: '⚡' },
-            { date: '2024-10', title: '接触 Python', desc: '用 Python 写了第一个爬虫，感受到了自动化的魅力。', icon: '🐍' },
-            { date: '2025-02', title: '开始学 React', desc: '组件化思维让前端开发变得更有趣。', icon: '⚛️' },
-            { date: '2025-05', title: '搭建个人主页', desc: '整合所学，打造了属于自己的一方天地。', icon: '🏠' },
-        ];
-
-        const timelineContainer = document.getElementById('timeline-container');
-        if (timelineContainer) {
-            timelineContainer.innerHTML = timelineData.map((item, i) => {
-                const isLeft = i % 2 === 0;
-                return `
-                <div class="relative flex items-center opacity-0 animate-fade-in-up" style="animation-delay:${0.1 * i}s;">
-                    <!-- 圆点 -->
-                    <div class="absolute left-4 sm:left-1/2 w-4 h-4 rounded-full border-4 border-white shadow -translate-x-1/2 z-10" style="background:var(--accent-500);"></div>
-                    <!-- 内容 -->
-                    <div class="ml-10 sm:ml-0 sm:w-1/2 ${isLeft ? 'sm:pr-10 sm:text-right' : 'sm:pl-10 sm:ml-auto'}">
-                        <div class="glass-card rounded-2xl p-4">
-                            <span class="text-xs font-bold" style="color:var(--accent-500);">${item.icon} ${item.date}</span>
-                            <h3 class="font-bold mt-1 text-sm" style="color:var(--text);">${item.title}</h3>
-                            <p class="text-xs mt-1" style="color:var(--text-secondary);">${item.desc}</p>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // ==========================================
-        // 9. 项目卡片渲染
-        // ==========================================
-        const projects = [
-            { name: '个人博客系统', desc: '轻量级博客，支持 Markdown 写作，毛玻璃设计风格。', tags: ['HTML','CSS','JS'], gradient: 'from-brand-100 via-brand-50 to-white', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>', iconColor: 'text-brand-300' },
-            { name: '数据分析面板', desc: '实时数据可视化仪表盘，支持多种图表和暗色模式。', tags: ['Python','Flask','ECharts'], gradient: 'from-purple-100 via-pink-50 to-white', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>', iconColor: 'text-purple-300' },
-            { name: '即时聊天应用', desc: '基于 WebSocket 实时聊天工具，多房间+表情包。', tags: ['Node.js','WebSocket','React'], gradient: 'from-blue-100 via-cyan-50 to-white', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>', iconColor: 'text-blue-300' },
-            { name: '图床工具', desc: '一键截图上传生成链接，剪贴板粘贴+多平台图床。', tags: ['Python','API'], gradient: 'from-green-100 via-emerald-50 to-white', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>', iconColor: 'text-green-300' },
-        ];
-
-        const projectsContainer = document.getElementById('projects-container');
-        if (projectsContainer) {
-            projectsContainer.innerHTML = projects.map((p, i) => `
-                <div class="project-card glass-card rounded-3xl overflow-hidden opacity-0 animate-fade-in-up group cursor-pointer" style="animation-delay:${0.1 * i}s;">
-                    <div class="h-40 bg-gradient-to-br ${p.gradient} project-img-placeholder flex items-center justify-center">
-                        <svg class="w-16 h-16 ${p.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${p.icon}</svg>
-                    </div>
-                    <div class="p-5 space-y-2">
-                        <h3 class="font-bold" style="color:var(--text);">${p.name}</h3>
-                        <p class="text-sm" style="color:var(--text-secondary);">${p.desc}</p>
-                        <div class="flex gap-2 pt-2">${p.tags.map(t => `<span class="tag-accent text-xs px-2 py-1 rounded-md">${t}</span>`).join('')}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ==========================================
         // 10. 社交链接渲染
         // ==========================================
         const socialLinks = [
@@ -2315,219 +1801,6 @@
         }
 
         // ==========================================
-        // 11. 留言板 (localStorage)
-        // ==========================================
-        const STORAGE_KEY = 'tachy_guestbook_messages';
-        const PIN_KEY = 'tachy_gb_pinned';
-        const LIKED_KEY = 'tachy_gb_liked';
-        let messages = [];
-        let pinnedIds = [];
-        let likedIds = [];
-
-        function loadMessages() {
-            try { messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-            catch (e) { messages = []; }
-            // 旧数据迁移：补充 id 与 likes 字段
-            let changed = false;
-            messages.forEach(m => {
-                if (!m.id) { m.id = 'm' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); changed = true; }
-                if (typeof m.likes !== 'number') { m.likes = 0; changed = true; }
-            });
-            if (changed) saveMessages();
-            try { pinnedIds = JSON.parse(localStorage.getItem(PIN_KEY) || '[]'); } catch (e) { pinnedIds = []; }
-            try { likedIds = JSON.parse(localStorage.getItem(LIKED_KEY) || '[]'); } catch (e) { likedIds = []; }
-        }
-
-        function saveMessages() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-        }
-
-        function renderMessages() {
-            const list = document.getElementById('gb-list');
-            const count = document.getElementById('gb-count');
-            if (!list) return;
-            if (messages.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">还没有留言，来做第一个留言的人吧！🎉</div>`;
-            } else {
-                // 置顶优先，其余按时间倒序
-                const sorted = [...messages].sort((a, b) => {
-                    const ap = pinnedIds.includes(a.id) ? 1 : 0;
-                    const bp = pinnedIds.includes(b.id) ? 1 : 0;
-                    if (ap !== bp) return bp - ap;
-                    return b.time - a.time;
-                });
-                list.innerHTML = sorted.map((m) => {
-                    const liked = likedIds.includes(m.id);
-                    const pinned = pinnedIds.includes(m.id);
-                    return `
-                    <div class="message-bubble glass-card rounded-2xl p-4 flex gap-3${pinned ? '' : ''}">
-                        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:linear-gradient(135deg,var(--accent-300),var(--accent-500));">
-                            ${(m.nickname || '?')[0]}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                ${pinned ? '<span class="text-xs">📌</span>' : ''}
-                                <span class="font-bold text-sm" style="color:var(--text);">${escapeHTML(m.nickname || '匿名')}</span>
-                                ${m.contact ? `<span class="text-xs text-gray-400">· ${escapeHTML(m.contact)}</span>` : ''}
-                                <span class="text-xs text-gray-300">${timeAgo(m.time)}</span>
-                            </div>
-                            <p class="text-sm mt-1" style="color:var(--text-secondary);">${escapeHTML(m.message)}</p>
-                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-                                <button class="text-xs px-2 py-1 rounded-md transition gb-like ${liked ? 'liked' : 'text-gray-400'}" data-id="${m.id}" title="点赞">👍 ${m.likes || 0}</button>
-                                <button class="text-xs px-2 py-1 rounded-md transition gb-pin ${pinned ? 'pinned' : 'text-gray-400'}" data-id="${m.id}" title="置顶/取消置顶">${pinned ? '📌 已置顶' : '📌 置顶'}</button>
-                                <button class="text-xs px-2 py-1 rounded-md transition text-gray-400 hover:text-red-400 gb-delete" data-id="${m.id}" title="删除">🗑 删除</button>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-            if (count) count.textContent = `${messages.length} 条留言`;
-        }
-
-        function escapeHTML(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        function timeAgo(ts) {
-            const diff = Date.now() - ts;
-            if (diff < 60000) return '刚刚';
-            if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
-            if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-            return new Date(ts).toLocaleDateString('zh-CN');
-        }
-
-        loadMessages();
-        renderMessages();
-
-        document.getElementById('gb-submit').addEventListener('click', () => {
-            const nickname = document.getElementById('gb-nickname').value.trim();
-            const contact = document.getElementById('gb-contact').value.trim();
-            const message = document.getElementById('gb-message').value.trim();
-
-            if (!message) { showToast('请输入留言内容～', 'warning'); return; }
-            if (!nickname) { showToast('请输入昵称～', 'warning'); return; }
-            if (message.length > 500) { showToast('留言太长了，最多 500 字～', 'warning'); return; }
-
-            messages.push({
-                id: 'm' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-                nickname: nickname.substring(0, 20),
-                contact: contact.substring(0, 20),
-                message: message.substring(0, 500),
-                time: Date.now(),
-                likes: 0,
-            });
-            saveMessages();
-            renderMessages();
-            showToast('✅ 留言发布成功！', 'success');
-
-            // 清空表单
-            document.getElementById('gb-nickname').value = '';
-            document.getElementById('gb-contact').value = '';
-            document.getElementById('gb-message').value = '';
-            updateCharCount();
-        });
-
-        // 点赞 / 置顶 / 删除留言（事件委托）
-        document.getElementById('gb-list').addEventListener('click', (e) => {
-            const likeBtn = e.target.closest('.gb-like');
-            if (likeBtn) {
-                const id = likeBtn.dataset.id;
-                const msg = messages.find(m => m.id === id);
-                if (!msg) return;
-                if (likedIds.includes(id)) {
-                    likedIds = likedIds.filter(x => x !== id);
-                    msg.likes = Math.max(0, (msg.likes || 0) - 1);
-                } else {
-                    likedIds.push(id);
-                    msg.likes = (msg.likes || 0) + 1;
-                    playClick();
-                }
-                localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
-                saveMessages();
-                renderMessages();
-                return;
-            }
-            const pinBtn = e.target.closest('.gb-pin');
-            if (pinBtn) {
-                const id = pinBtn.dataset.id;
-                if (pinnedIds.includes(id)) {
-                    pinnedIds = pinnedIds.filter(x => x !== id);
-                } else {
-                    pinnedIds.push(id);
-                    showToast('📌 已置顶该留言', 'success');
-                }
-                localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
-                renderMessages();
-                return;
-            }
-            const delBtn = e.target.closest('.gb-delete');
-            if (delBtn) {
-                // 按 id 删除，避免排序后索引错位导致删错条目
-                const idx = messages.findIndex(m => m.id === delBtn.dataset.id);
-                if (idx >= 0) {
-                    const removed = messages[idx];
-                    messages.splice(idx, 1);
-                    pinnedIds = pinnedIds.filter(x => x !== removed.id);
-                    likedIds = likedIds.filter(x => x !== removed.id);
-                    localStorage.setItem(PIN_KEY, JSON.stringify(pinnedIds));
-                    localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
-                    saveMessages();
-                    renderMessages();
-                }
-            }
-        });
-
-        // 回车提交
-        document.getElementById('gb-message').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                document.getElementById('gb-submit').click();
-            }
-        });
-
-        // 字数统计 + 快捷表情
-        const gbMessageInput = document.getElementById('gb-message');
-        const gbCharCount = document.getElementById('gb-char-count');
-        const gbEmojis = document.getElementById('gb-emojis');
-        const GB_EMOJI_LIST = ['😀','😂','🥰','😎','🤔','😭','👍','👏','🎉','❤️','🔥','🐱','🌙','⭐'];
-
-        function insertAtCursor(textarea, text) {
-            const start = textarea.selectionStart ?? textarea.value.length;
-            const end = textarea.selectionEnd ?? textarea.value.length;
-            textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
-            const pos = start + text.length;
-            textarea.focus();
-            textarea.setSelectionRange(pos, pos);
-            textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-
-        function updateCharCount() {
-            if (!gbCharCount || !gbMessageInput) return;
-            const len = gbMessageInput.value.length;
-            gbCharCount.textContent = `${len}/500`;
-            gbCharCount.classList.toggle('text-red-400', len > 500);
-            gbCharCount.classList.toggle('text-gray-400', len <= 500);
-        }
-
-        if (gbEmojis) {
-            gbEmojis.innerHTML = GB_EMOJI_LIST.map(em =>
-                `<button type="button" class="text-base hover:scale-125 transition-transform" aria-label="插入表情 ${em}">${em}</button>`
-            ).join('');
-            gbEmojis.addEventListener('click', (e) => {
-                const btn = e.target.closest('button');
-                if (!btn || !gbMessageInput) return;
-                insertAtCursor(gbMessageInput, btn.textContent);
-            });
-        }
-
-        if (gbMessageInput) {
-            gbMessageInput.addEventListener('input', updateCharCount);
-            updateCharCount();
-        }
-
-        // ==========================================
         // 12. 移动端菜单
         // ==========================================
         const menuBtn = document.getElementById('mobileMenuBtn');
@@ -2540,7 +1813,7 @@
         }
 
         // ==========================================
-        // 13. 滚动揭示动画（IntersectionObserver + 技能条）
+        // 13. 滚动揭示动画（IntersectionObserver）
         // ==========================================
         // 将一次性入场动画类转换为真正由滚动触发的揭示动画，
         // 使首屏之外的内容在滚到可视区时才出现，而非页面加载时全部播完。
@@ -2548,7 +1821,6 @@
 
         function initReveal() {
             const revealEls = Array.from(document.querySelectorAll(REVEAL_SELECTOR));
-            const skillBars = Array.from(document.querySelectorAll('.skill-bar-fill'));
 
             revealEls.forEach(el => {
                 let variant = 'up';
@@ -2566,17 +1838,12 @@
                 entries.forEach(entry => {
                     if (!entry.isIntersecting) return;
                     const el = entry.target;
-                    if (el.classList.contains('skill-bar-fill')) {
-                        el.style.width = el.dataset.width + '%';
-                    } else {
-                        el.classList.add('revealed');
-                    }
+                    el.classList.add('revealed');
                     io.unobserve(el);
                 });
             }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
 
             revealEls.forEach(el => io.observe(el));
-            skillBars.forEach(el => io.observe(el));
         }
 
         // ==========================================
@@ -2827,120 +2094,6 @@
                 else if (e.key === 'ArrowLeft') openLightbox(lightboxIndex - 1);
                 else if (e.key === 'ArrowRight') openLightbox(lightboxIndex + 1);
             });
-        }
-
-        // ==========================================
-        // 22. 贡献热力图（模拟）
-        // ==========================================
-        const heatmapContainer = document.getElementById('heatmap-container');
-        if (heatmapContainer) {
-            const MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-            const DAYS_PER_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
-            // 模拟一年的数据
-            const generateHeatData = () => {
-                const data = [];
-                const now = new Date();
-                for (let d = 364; d >= 0; d--) {
-                    const date = new Date(now);
-                    date.setDate(date.getDate() - d);
-                    const dayOfWeek = date.getDay();
-                    // 周末概率低，工作日概率高
-                    const baseChance = (dayOfWeek === 0 || dayOfWeek === 6) ? 0.3 : 0.7;
-                    const rand = Math.random();
-                    let level = 0;
-                    if (rand < baseChance * 0.4) level = 1;
-                    else if (rand < baseChance * 0.65) level = 2;
-                    else if (rand < baseChance * 0.85) level = 3;
-                    else if (rand < baseChance) level = 4;
-                    data.push({ date, level });
-                }
-                return data;
-            };
-
-            const heatData = generateHeatData();
-            let html = '<div style="position:relative;display:flex;gap:2px;flex-wrap:wrap;min-width:700px;">';
-            // 月份标签
-            html += '<div style="display:flex;gap:2px;width:100%;height:14px;margin-bottom:2px;">';
-            let lastMonth = -1;
-            heatData.forEach((d, i) => {
-                const month = d.date.getMonth();
-                if (month !== lastMonth) {
-                    const pos = (i / heatData.length) * 100;
-                    html += `<span style="position:absolute;left:${pos}%;font-size:10px;color:var(--text-secondary);">${MONTHS[month]}</span>`;
-                    lastMonth = month;
-                }
-            });
-            html += '</div>';
-            html += '<div style="display:flex;gap:2px;flex-wrap:wrap;">';
-            heatData.forEach((d, i) => {
-                if (i % 7 === 0) html += '<div style="display:flex;gap:2px;">';
-                html += `<div class="heat-cell heat-l${d.level}" title="${d.date.toLocaleDateString('zh-CN')}: ${d.level} 次提交"></div>`;
-                if (i % 7 === 6) html += '</div>';
-            });
-            html += '</div></div>';
-            heatmapContainer.innerHTML = html;
-        }
-
-        // ==========================================
-        // 23. 标签云
-        // ==========================================
-        const tags = [
-            'HTML', 'CSS', 'JavaScript', 'Python', 'React', 'Vue', 'Node.js',
-            'Git', 'Docker', 'Linux', 'VS Code', 'TypeScript', 'Tailwind',
-            '开源', '前端', '后端', '全栈', 'AI', '机器学习', 'API',
-            'RESTful', 'GraphQL', '数据库', 'MongoDB', 'Redis', 'Nginx',
-        ];
-
-        const tagCloud = document.getElementById('tag-cloud');
-        if (tagCloud) {
-            tagCloud.innerHTML = tags.map(t => {
-                const size = 12 + Math.random() * 10; // 12-22px
-                const weight = Math.random() > 0.5 ? 'bold' : 'normal';
-                return `<span class="tag-cloud-item" style="font-size:${size}px;font-weight:${weight};">${t}</span>`;
-            }).join('');
-
-            // 点击标签
-            tagCloud.addEventListener('click', (e) => {
-                if (e.target.classList.contains('tag-cloud-item')) {
-                    const tag = e.target.textContent;
-                    showToast(`🏷️ 你点击了「${tag}」`, 'info');
-                    // 弹跳动画
-                    e.target.style.transform = 'scale(1.3)';
-                    setTimeout(() => { e.target.style.transform = ''; }, 200);
-                }
-            });
-        }
-
-        // ==========================================
-        // 24. 友情链接
-        // ==========================================
-        // 已还原为 Google favicon 服务原始图标源（撤销上一步的掘金内嵌图标）。
-        // 保留 onerror 兜底的小修复：原写法先 remove() 再访问 parentElement（已为 null）
-        // 会报错导致显示空白；改用 replaceWith 一行完成首字母回退。
-        const friends = [
-            { name: 'GitHub', desc: '全球最大同性交友平台', url: 'https://github.com', domain: 'github.com', color: '#24292e' },
-            { name: '掘金', desc: '开发者社区', url: 'https://juejin.cn', domain: 'juejin.cn', color: '#1e80ff' },
-            { name: 'Stack Overflow', desc: '程序员的维基百科', url: 'https://stackoverflow.com', domain: 'stackoverflow.com', color: '#f48225' },
-            { name: 'MDN', desc: 'Web 开发文档', url: 'https://developer.mozilla.org', domain: 'developer.mozilla.org', color: '#15141a' },
-            { name: 'V2EX', desc: '创意工作者社区', url: 'https://v2ex.com', domain: 'v2ex.com', color: '#334455' },
-            { name: '知乎', desc: '有问题就有答案', url: 'https://zhihu.com', domain: 'zhihu.com', color: '#0066ff' },
-        ];
-
-        const friendsContainer = document.getElementById('friends-container');
-        if (friendsContainer) {
-            friendsContainer.innerHTML = friends.map(f => `
-                <a href="${f.url}" target="_blank" rel="noopener" class="friend-link-card">
-                    <div class="friend-avatar" style="background:${f.color};">
-                        <img src="https://www.google.com/s2/favicons?domain=${f.domain}&sz=64"
-                             alt="" loading="lazy"
-                             onerror="this.replaceWith('${f.name[0]}')" />
-                    </div>
-                    <div>
-                        <div class="font-bold text-sm">${f.name}</div>
-                        <div class="text-xs" style="color:var(--text-secondary);">${f.desc}</div>
-                    </div>
-                </a>
-            `).join('');
         }
 
         // ==========================================
@@ -3474,7 +2627,7 @@
         // 全局点击音效
         document.addEventListener('click', (e) => {
             const el = e.target;
-            if (el.closest('button, a, .tag-cloud-item, .gallery-img, .dot-nav-item, .fab-item, .social-icon-link, .friend-link-card')) {
+            if (el.closest('button, a, .gallery-img, .dot-nav-item, .social-icon-link')) {
                 playClick();
             }
         }, true);
@@ -3483,7 +2636,7 @@
         let lastHoverTime = 0;
         document.addEventListener('mouseover', (e) => {
             const el = e.target;
-            if (el.closest('button, a, .tag-cloud-item, .gallery-img, .fab-item, .social-icon-link, .friend-link-card, .project-card')) {
+            if (el.closest('button, a, .gallery-img, .social-icon-link')) {
                 const now = Date.now();
                 if (now - lastHoverTime > 120) {
                     playHover();
@@ -3563,8 +2716,6 @@
             if (cursorGlow) cursorGlow.classList.toggle('hidden-glow', !fxEnabled);
             if (!fxEnabled && musicAnimId) { cancelAnimationFrame(musicAnimId); musicAnimId = null; }
             if (fxEnabled && !musicAnimId) drawMusicViz();
-            const fxIcon = document.querySelector('.fab-item[data-action="fx"] .fab-icon');
-            if (fxIcon) fxIcon.innerHTML = '<i class="fa-solid ' + (fxEnabled ? 'fa-wand-magic-sparkles' : 'fa-eye-slash') + '"></i>';
             if (typeof applySeasonFx === 'function') applySeasonFx(); // 联动季节特效
         }
 
@@ -3658,55 +2809,6 @@
             localStorage.setItem(SEASON_FX_KEY, next);
             applySeasonFx();
             showToast('季节特效：' + names[next], 'info');
-        }
-
-        // ==========================================
-        // 31. FAB 快捷菜单
-        // ==========================================
-        const fabToggle = document.getElementById('fabToggle');
-        const fabItems = document.querySelectorAll('.fab-item');
-        let fabOpen = false;
-
-        if (fabToggle) {
-            fabToggle.addEventListener('click', () => {
-                fabOpen = !fabOpen;
-                fabToggle.classList.toggle('open', fabOpen);
-                fabToggle.innerHTML = '<i class="fa-solid ' + (fabOpen ? 'fa-xmark' : 'fa-bolt') + '"></i>';
-                fabItems.forEach(item => item.classList.toggle('visible', fabOpen));
-                playToggle();
-            });
-
-            fabItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    const action = item.dataset.action;
-                    switch (action) {
-                        case 'accent':
-                            cycleAccent();
-                            break;
-                        case 'fx':
-                            toggleFx();
-                            break;
-                        case 'share':
-                            sharePage();
-                            break;
-                    }
-                    // 关闭菜单
-                    setTimeout(() => {
-                        fabOpen = false;
-                        fabToggle.classList.remove('open');
-                        fabItems.forEach(item => item.classList.remove('visible'));
-                    }, 300);
-                });
-            });
-
-            // 点击外部关闭
-            document.addEventListener('click', (e) => {
-                if (fabOpen && !e.target.closest('#fab-menu')) {
-                    fabOpen = false;
-                    fabToggle.classList.remove('open');
-                    fabItems.forEach(item => item.classList.remove('visible'));
-                }
-            });
         }
 
         // ==========================================
@@ -4062,8 +3164,6 @@
                     tonearm.classList.remove('playing');
                 }
             }
-            // 同步音乐悬浮球状态
-            updateMusicOrb();
         }
 
         function setStation(station) {
@@ -4074,9 +3174,6 @@
             if (musicTitleEl) musicTitleEl.textContent = name;
             if (musicArtistEl) musicArtistEl.textContent = artistText;
             if (vinylLabel) vinylLabel.textContent = name.substring(0, 12);
-            // 同步迷你播放器信息
-            if (mmpTitleEl) mmpTitleEl.textContent = name;
-            if (mmpArtistEl) mmpArtistEl.textContent = artistText;
             // 更新系统媒体元数据（锁屏/媒体中心显示曲目信息）
             if ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') {
                 try {
@@ -4270,27 +3367,8 @@
         }
 
         // ==========================================
-        // 37.5 音乐悬浮球 + 迷你播放器（Orb → Mini → 电台歌单）
+        // 37.5 上一电台
         // ==========================================
-        const musicOrb = document.getElementById('music-orb');
-        const miniPanel = document.getElementById('mini-music-panel');
-        const mmpTitleEl = document.getElementById('mmp-title');
-        const mmpArtistEl = document.getElementById('mmp-artist');
-        const mmpPlayBtn = document.getElementById('mmp-play');
-        const mmpPrevBtn = document.getElementById('mmp-prev');
-        const mmpNextBtn = document.getElementById('mmp-next');
-        const mmpRandomBtn = document.getElementById('mmp-random');
-        const mmpListBtn = document.getElementById('mmp-list');
-        const mmpCloseBtn = document.getElementById('mmp-close');
-        const mmpPlaylist = document.getElementById('mmp-playlist');
-        let mmpOpen = false;
-
-        function updateMusicOrb() {
-            if (!musicOrb) return;
-            musicOrb.classList.toggle('playing', musicPlaying);
-            if (mmpPlayBtn) mmpPlayBtn.innerHTML = '<i class="fa-solid ' + (musicPlaying ? 'fa-pause' : 'fa-play') + '"></i>';
-        }
-
         function playPrevStation() {
             if (stationHistory.length > 1) {
                 stationHistory.pop();
@@ -4299,59 +3377,6 @@
                 playRandomStation();
             }
         }
-
-        function renderStationList() {
-            if (!mmpPlaylist) return;
-            mmpPlaylist.innerHTML = '';
-            CURATED_STATIONS.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'mmp-station' + (currentStation && currentStation.url_resolved === s.url_resolved ? ' active' : '');
-                const name = document.createElement('span');
-                name.textContent = s.name;
-                const tags = document.createElement('span');
-                tags.className = 'mmp-st-tags';
-                tags.textContent = (s.tags || '').split(',').slice(0, 2).join(' / ');
-                btn.append(name, tags);
-                btn.addEventListener('click', () => {
-                    playClick();
-                    playStation(s);
-                    renderStationList(); // 刷新高亮
-                });
-                mmpPlaylist.appendChild(btn);
-            });
-        }
-
-        function setMmpOpen(open) {
-            mmpOpen = open;
-            if (miniPanel) miniPanel.classList.toggle('open', open);
-            if (!open && mmpPlaylist) mmpPlaylist.classList.remove('open');
-        }
-
-        if (musicOrb) {
-            musicOrb.addEventListener('click', () => {
-                if (!mmpOpen) playClick();
-                setMmpOpen(!mmpOpen);
-            });
-            musicOrb.classList.add('orb-enter'); // 初次显示弹性入场
-        }
-        if (mmpCloseBtn) mmpCloseBtn.addEventListener('click', () => setMmpOpen(false));
-        if (mmpPlayBtn) mmpPlayBtn.addEventListener('click', () => toggleMusicPlay());
-        if (mmpPrevBtn) mmpPrevBtn.addEventListener('click', () => { playClick(); playPrevStation(); });
-        if (mmpNextBtn) mmpNextBtn.addEventListener('click', () => { playClick(); playRandomStation(); });
-        if (mmpRandomBtn) mmpRandomBtn.addEventListener('click', () => { playClick(); playRandomStation(); });
-        if (mmpListBtn) {
-            mmpListBtn.addEventListener('click', () => {
-                if (!mmpPlaylist) return;
-                const willOpen = !mmpPlaylist.classList.contains('open');
-                mmpPlaylist.classList.toggle('open', willOpen);
-                if (willOpen) renderStationList();
-            });
-        }
-        // 点击外部收起
-        document.addEventListener('click', (e) => {
-            if (mmpOpen && !e.target.closest('#music-orb-wrap')) setMmpOpen(false);
-        });
 
         // 流错误自动切换（标记失败流，跳过重试）
         let stationFailCount = 0;
@@ -4425,11 +3450,7 @@
             { icon:'<i class="fa-solid fa-house"></i>', title:'回到顶部', hint:'hero', keywords:'top home 首页', run:() => window.scrollTo({ top:0, behavior:'smooth' }) },
             { icon:'<i class="fa-solid fa-user"></i>', title:'关于我', hint:'about', keywords:'关于 about', run:() => scrollToSection('about') },
             { icon:'<i class="fa-solid fa-music"></i>', title:'音乐盒子', hint:'music', keywords:'音乐 电台 music', run:() => scrollToSection('music-section') },
-            { icon:'<i class="fa-solid fa-brain"></i>', title:'技术栈', hint:'skills', keywords:'技能 skills', run:() => scrollToSection('skills') },
-            { icon:'<i class="fa-solid fa-route"></i>', title:'我的历程', hint:'timeline', keywords:'历程 timeline', run:() => scrollToSection('timeline') },
-            { icon:'<i class="fa-solid fa-code"></i>', title:'项目作品', hint:'projects', keywords:'项目 projects', run:() => scrollToSection('projects') },
             { icon:'<i class="fa-solid fa-images"></i>', title:'照片墙', hint:'gallery', keywords:'照片 画廊 gallery', run:() => scrollToSection('gallery') },
-            { icon:'<i class="fa-solid fa-comment-dots"></i>', title:'留言板', hint:'guestbook', keywords:'留言 guestbook', run:() => scrollToSection('guestbook') },
             { icon:'<i class="fa-solid fa-envelope"></i>', title:'找到我', hint:'contact', keywords:'联系 contact', run:() => scrollToSection('contact') },
             { icon:'<i class="fa-solid fa-circle-half-stroke"></i>', title:'切换暗色 / 亮色模式', hint:'theme', keywords:'主题 暗色 亮色 theme dark light', run:() => themeToggle.click() },
             { icon:'<i class="fa-solid fa-clock"></i>', title:'主题模式：自动 / 亮 / 暗', hint:'theme-mode', keywords:'主题模式 自动 夜间 夜间模式 auto night', run:() => cycleThemeMode() },
